@@ -31,14 +31,14 @@ class Cell(Object):
 
 class Plant(Object):
     color = (74, 120, 0)
-    radius = 15
+    radius = 7
 
     def __init__(self, x, y, screen):
         super().__init__(x, y, screen)
 
     def draw(self):
         pygame.draw.circle(self.screen, Plant.color,
-                           (self.coordinate_x, self.coordinate_y), Plant.radius)
+                           (self.coordinate_x, self.coordinate_y), Plant.radius, 4)
 
 
 class Wall(Object):
@@ -85,11 +85,16 @@ class Button:
 class GUI:
     DISPLAY_X = 1000
     DISPLAY_Y = 700
+    Field_SIZE = 100
     DISPLAY_COLOR = (70, 80, 80)
     MENU_COLOR = (30, 50, 50)
+    TEXT_FONT = "arial.ttf"
+    TEXT_SIZE = 25
 
     def __init__(self):
         pygame.init()
+        pygame.font.init()
+        self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
         self.screen = pygame.display.set_mode((GUI.DISPLAY_X, GUI.DISPLAY_Y))  # create a screen
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -105,19 +110,29 @@ class GUI:
         self.plants = []
         self.walls = []
 
+        self.not_available_field = []
+
     def spawn_cell(self, name_class):
         spawn = True
         while spawn:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    spawn = False
+
                     x, y = pygame.mouse.get_pos()
+
                     if name_class == 'Cell':
-                        self.cells.append(Cell(x, y, self.screen, (70, 10, 70)))
+                        if self.available_coordinates(x, y, Cell.radius):
+                            self.cells.append(Cell(x, y, self.screen, (70, 10, 70)))
+                            spawn = False
                     elif name_class == 'Plant':
-                        self.plants.append(Plant(x, y, self.screen))
+                        if self.available_coordinates(x, y, Plant.radius):
+                            self.plants.append(Plant(x, y, self.screen))
+                            spawn = False
                     elif name_class == 'Wall':
-                        self.walls.append(Wall(x, y, self.screen))
+                        if x <= GUI.DISPLAY_X-GUI.Field_SIZE-Wall.size[0]:
+                            self.walls.append(Wall(x, y, self.screen))
+                            self.not_available_field.append([range(x, x+Wall.size[0]+1), range(y, y+Wall.size[1]+1)])
+                            spawn = False
 
     def main(self):
         run = True
@@ -125,7 +140,7 @@ class GUI:
             self.screen.fill(GUI.DISPLAY_COLOR)
             for obj in [*self.cells, *self.plants, *self.walls]:
                 obj.draw()
-            pygame.draw.rect(self.screen, GUI.MENU_COLOR, pygame.Rect(900, 0, 100, 700))
+            pygame.draw.rect(self.screen, GUI.MENU_COLOR, pygame.Rect(GUI.DISPLAY_X-GUI.Field_SIZE, 0, 100, 700))
 
             if self.light_button.draw(self.screen):
                 self.change_light()
@@ -143,6 +158,8 @@ class GUI:
                     run = False
                     pygame.quit()
 
+            text_surface = self.font.render('Generation 0', False, (10, 20, 10))
+            self.screen.blit(text_surface, (10, 10))
             pygame.display.update()
 
     def change_light(self):
@@ -155,6 +172,14 @@ class GUI:
             GUI.MENU_COLOR = (255, 255, 255)
         else:
             GUI.MENU_COLOR = (30, 50, 50)
+
+    def available_coordinates(self, x, y, radius):
+        x_coordinate = set(range(x - radius, x + radius + 1))
+        y_coordinate = set(range(y - radius, y + radius + 1))
+        for wall in self.not_available_field:
+            if set(wall[0]) & x_coordinate and set(wall[1]) & y_coordinate:
+                return False
+        return True
 
 
 display = GUI()
