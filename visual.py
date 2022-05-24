@@ -89,7 +89,7 @@ class GUI:
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
 
         #load button images
-        pygame.draw.rect(self.screen, (30, 50, 50), pygame.Rect(900, 0, 100, 700))
+
         self.light_button = Button(930, 100, "images/idea.png")
         self.cell_button = Button(930, 200, "images/cell.png")
         self.wall_button = Button(930, 300, "images/wall.png")
@@ -109,9 +109,10 @@ class GUI:
         run = True
         while run:
             self.screen.fill((70, 80, 80))
+            for obj in [*self.cells, *self.plants, *self.walls]:
+                obj.draw()
             pygame.draw.rect(self.screen, (30, 50, 50), pygame.Rect(900, 0, 100, 700))
 
-    
             if self.light_button.draw(self.screen):
                 print("Turn the light on")
             if self.cell_button.draw(self.screen):
@@ -131,8 +132,8 @@ class GUI:
                     run = False
                     pygame.quit()
 
-            for obj in [*self.cells, *self.plants, *self.walls]:
-                obj.draw()
+
+
             pygame.display.update()
 
 
