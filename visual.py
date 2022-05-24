@@ -44,12 +44,13 @@ class Wall(Object):
                         
 
 class Button():
-    def __init__(self, x, y, image):
-        self.image = image
+    def __init__(self, x, y, path):
+        img = pygame.image.load(path).convert_alpha()
+        self.image = pygame.transform.scale(img, (40, 40))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
-    
+
     def draw(self, surface):
         """Draws a button on screen."""
         action = False
@@ -80,25 +81,12 @@ class GUI:
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
         #load button images
-        light_img = pygame.image.load("images/idea.png").convert_alpha()
-        look_light  = pygame.transform.scale(light_img, (40, 40))
-        self.light_button = Button(930, 100, look_light)
 
-        cell_img = pygame.image.load("images/cell.png").convert_alpha()
-        look_cell = pygame.transform.scale(cell_img, (40, 40))
-        self.cell_button = Button(930, 200, look_cell)
-
-        wall_img = pygame.image.load("images/wall.png").convert_alpha()
-        look_wall = pygame.transform.scale(wall_img, (40, 40))
-        self.wall_button = Button(930, 300, look_wall)
-
-        plant_img = pygame.image.load("images/plant.png").convert_alpha()
-        look_plant = pygame.transform.scale(plant_img, (40, 40))
-        self.plant_button = Button(930, 400, look_plant)
-
-        play_img = pygame.image.load("images/play-button.png")
-        look_play = pygame.transform.scale(play_img, (40, 40))
-        self.play_button = Button(930, 500, look_play)
+        self.light_button = Button(930, 100, "images/idea.png")
+        self.cell_button = Button(930, 200, "images/cell.png")
+        self.wall_button = Button(930, 300, "images/wall.png")
+        self.plant_button = Button(930, 400, "images/plant.png")
+        self.play_button = Button(930, 500, "images/play-button.png")
 
     def spawn_cell(self):
         cell1 = Cell(200, 200, self.screen, (70, 10, 70))
@@ -141,6 +129,7 @@ class GUI:
             cell1.draw()
 
             pygame.display.update()
+
 
 display = GUI()
 display.main()
