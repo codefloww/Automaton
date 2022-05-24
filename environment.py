@@ -3,57 +3,56 @@ class Environment:
     """
     An environment.
     """
-    def __init__(self, width, height, cell_type):
+    def __init__(self, width, height, cell_type = None, lighting = None):
         """
         Initialize the environment.
         """
         self.width = width
         self.height = height
-        self.cells = [[Cell(x, y, cell_type) for y in range(height)] for x in range(width)]
-        self.cell_type = cell_type
-        self.organism = None
+        self.size = width * height
+        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
 
     def __str__(self):
         """
         Return a string representation of the environment.
         """
-        return "\n".join([" ".join([str(cell) for cell in row]) for row in self.cells])
+        return "\n".join([" ".join([str(cell) for cell in row]) for row in self.grid])
 
     def __eq__(self, other):
         """
         Return True if the environments are equal.
         """
-        return self.cells == other.cells
+        return self.grid == other.grid
 
     def __hash__(self):
         """
         Return a hash of the environment.
         """
-        return hash(tuple(tuple(row) for row in self.cells))
+        return hash(tuple(tuple(row) for row in self.grid))
 
     def __getitem__(self, index):
         """
         Return the cell at the specified index.
         """
-        return self.cells[index]
+        return self.grid[index]
 
     def __setitem__(self, index, value):
         """
         Set the cell at the specified index.
         """
-        self.cells[index] = value
+        self.grid[index] = value
 
     def __len__(self):
         """
         Return the number of cells in the environment.
         """
-        return len(self.cells)
+        return len(self.grid)
 
     def __iter__(self):
         """
         Return an iterator over the cells in the environment.
         """
-        for row in self.cells:
+        for row in self.grid:
             for cell in row:
                 yield cell
 
@@ -61,13 +60,27 @@ class Environment:
         """
         Return the cell at the specified coordinates.
         """
-        return self.cells[x][y]
+        return self.grid[x][y]
 
     def set_cell(self, x, y, cell):
         """
         Set the cell at the specified coordinates.
         """
-        self.cells[x][y] = cell
+        self.grid[x][y] = cell
 
     def get_neighbors(self, x, y):
         pass
+
+    def get_environment_state(self):
+        """
+        Return the environment state.
+        """
+        states = []
+        for row in self.grid:
+            for cell in row:
+                states.append(cell.get_state())
+
+if __name__ == "__main__":
+    env = Environment(10, 10, "empty")
+    env[5][3] = Cell(5, 3, "wall")
+    print(env)

@@ -7,7 +7,7 @@ class Cell:
     """
     x: int
     y: int
-    cell_type: str
+    cell_type: str = "empty"
     light: int = 10
     organism: 'Organism' = None
 
@@ -16,7 +16,7 @@ class Cell:
         return f"({self.x}, {self.y}) - {self.cell_type}"
     @abstractmethod
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.cell_type == other.cell_type
+        return self.x == other.x and self.y == other.y and self.cell_type == other.cell_type and self.organism == other.organism
     @abstractmethod
     def __hash__(self):
         return hash((self.x, self.y))
