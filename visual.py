@@ -7,6 +7,10 @@ class Object:
         self.coordinate_y = y
         self.screen = screen
 
+    def move(self, x, y):
+        self.coordinate_x = (self.coordinate_x + x) % GUI.DISPLAY_X
+        self.coordinate_y = (self.coordinate_y + y) % GUI.DISPLAY_Y
+
 
 class Cell(Object):
     radius = 10
@@ -44,6 +48,10 @@ class Wall(Object):
                          (self.coordinate_x, self.coordinate_y, Wall.size[0], Wall.size[1]))
 
 
+class Button:
+    pass
+
+
 class GUI:
     DISPLAY_X = 1000
     DISPLAY_Y = 700
@@ -75,7 +83,6 @@ class GUI:
             plant1.draw()
             cell1 = Cell(200, 200, self.screen, (70, 10, 70))
             cell1.draw()
-
 
             pygame.display.update()
 
