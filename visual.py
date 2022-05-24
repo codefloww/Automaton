@@ -1,4 +1,9 @@
 import pygame, sys
+SKY_BLUE = (135, 206, 235)
+YELLOW = (245, 236, 142)
+GREEN = (110, 212, 123)
+PURPLE = (150, 110, 212)
+RED = (247, 129, 134)
 
 
 class Object:
@@ -26,7 +31,7 @@ class Cell(Object):
 
 class Plant(Object):
     color = (74, 120, 0)
-    radius = 10
+    radius = 15
 
     def __init__(self, x, y, screen):
         super().__init__(x, y, screen)
@@ -38,7 +43,7 @@ class Plant(Object):
 
 class Wall(Object):
     color = (20, 20, 20)
-    size = (50, 50)
+    size = (40, 40)
 
     def __init__(self, x, y, screen):
         super().__init__(x, y, screen)
@@ -80,6 +85,8 @@ class Button:
 class GUI:
     DISPLAY_X = 1000
     DISPLAY_Y = 700
+    DISPLAY_COLOR = (70, 80, 80)
+    MENU_COLOR = (30, 50, 50)
 
     def __init__(self):
         pygame.init()
@@ -115,13 +122,13 @@ class GUI:
     def main(self):
         run = True
         while run:
-            self.screen.fill((70, 80, 80))
+            self.screen.fill(GUI.DISPLAY_COLOR)
             for obj in [*self.cells, *self.plants, *self.walls]:
                 obj.draw()
-            pygame.draw.rect(self.screen, (30, 50, 50), pygame.Rect(900, 0, 100, 700))
+            pygame.draw.rect(self.screen, GUI.MENU_COLOR, pygame.Rect(900, 0, 100, 700))
 
             if self.light_button.draw(self.screen):
-                print("Turn the light on")
+                self.change_light()
             if self.cell_button.draw(self.screen):
                 self.spawn_cell('Cell')
             if self.plant_button.draw(self.screen):
@@ -137,6 +144,17 @@ class GUI:
                     pygame.quit()
 
             pygame.display.update()
+
+    def change_light(self):
+        if GUI.DISPLAY_COLOR == (70, 80, 80):
+            GUI.DISPLAY_COLOR = SKY_BLUE
+        else:
+            GUI.DISPLAY_COLOR = (70, 80, 80)
+
+        if GUI.MENU_COLOR == (30, 50, 50):
+            GUI.MENU_COLOR = (255, 255, 255)
+        else:
+            GUI.MENU_COLOR = (30, 50, 50)
 
 
 display = GUI()
