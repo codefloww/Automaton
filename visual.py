@@ -7,6 +7,9 @@ class Object:
         self.coordinate_y = y
         self.screen = screen
 
+    def move(self, x, y):
+        self.coordinate_x = (self.coordinate_x + x) % GUI.DISPLAY_X
+        self.coordinate_y = (self.coordinate_y + y) % GUI.DISPLAY_Y
 
 class Cell(Object):
     radius = 10
