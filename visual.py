@@ -36,7 +36,6 @@ class Cell(Object):
 
 
 class Plant(Object):
-    # color = (80, 150, 80)
     color = GREEN
     radius = 20
 
@@ -77,12 +76,6 @@ class Button():
         self.is_on = False
         self.created_object = created
 
-    def update(self, path):
-        img = pygame.image.load(path).convert_alpha()
-        self.image = pygame.transform.scale(img, (40, 40))
-        # surface.blit(image, self.rect)
-        
-
     def turn_on(self):
         self.is_on = True
         self.image = self.image_on
@@ -102,11 +95,9 @@ class Button():
             if pygame.mouse.get_pressed()[0] and not self.clicked: # 0 - left click
                 self.clicked = True
                 action = True
-                # self.turn_on()
 
             if pygame.mouse.get_pressed()[0] == 0:
                 self.clicked = False
-                # self.turn_off()
 
         #draw a button
         surface.blit(self.image, (self.rect.x, self.rect.y))
@@ -117,7 +108,6 @@ class GUI:
     DISPLAY_Y = 700
 
     def __init__(self):
-        # pygame.init()
         self.screen = pygame.display.set_mode((GUI.DISPLAY_X, GUI.DISPLAY_Y))  # create a screen
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -129,7 +119,7 @@ class GUI:
         self.play_button = Button(940, 480, "images/play-button.png", "images/video-pause-button.png")
         self.quit_button = Button(940, 580, "images/remove.png")
         self.button = None
-        self.cur_spawning_button = None 
+        self.cur_spawning_button = None
 
         self.cells = []
         self.plants = []
@@ -139,7 +129,7 @@ class GUI:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if name_class == 'Cell':      
+                if name_class == 'Cell':
                     self.cells.append(Cell(x, y, self.screen))
                 elif name_class == 'Plant':
                     self.plants.append(Plant(x, y, self.screen))
@@ -170,7 +160,7 @@ class GUI:
             if self.light_button.draw(self.screen):
                 self.light_button.turn_on()
                 print("Turn the light on")
-        
+
             # Cell button
             self.button_navigate(self.cell_button)
 
