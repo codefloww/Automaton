@@ -176,6 +176,7 @@ class GUI:
             if self.wall_button.draw(self.screen):
                 self.spawn_cell('Wall')
 
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
                     run = False
@@ -189,7 +190,6 @@ class GUI:
             # pygame.draw.rect(self.screen, (0, 102, 204), (900, 686, 100, 7))
             # pygame.draw.rect(self.screen, (245, 191, 15), (900, 693, 100, 7))
             pygame.display.update()
-
 
 display = GUI()
 display.main()
