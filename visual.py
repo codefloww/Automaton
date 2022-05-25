@@ -1,5 +1,7 @@
 import random
 import pygame
+from cell import Cell as CCell
+from environment import Environment
 
 #color palette
 SKY_BLUE = (135, 206, 235)
@@ -105,6 +107,7 @@ class GUI:
         self.cells = []
         self.plants = []
         self.walls = []
+        self.environment = Environment(GUI.DISPLAY_X, GUI.DISPLAY_Y)
 
     def main(self):
         run = True
@@ -116,12 +119,16 @@ class GUI:
                 print("Turn the light on")
             if self.cell_button.draw(self.screen):
                 # print("Spawn a cell")
-                self.cells.append(Cell(random.randint(0, GUI.DISPLAY_X-100), random.randint(0, GUI.DISPLAY_Y), self.screen))
+                new_cell = Cell(random.randint(0, GUI.DISPLAY_X-100), random.randint(0, GUI.DISPLAY_Y), self.screen)
+                self.cells.append(new_cell)
+                self.environment.cells_matrix[new_cell.coordinate_y][new_cell.coordinate_x] = 1
+                self.environment.cells_objects.append(CCell(new_cell.coordinate_x, new_cell.coordinate_y))
             if self.plant_button.draw(self.screen):
                 # print("Place some food")
                 self.plants.append(Plant(random.randint(0, GUI.DISPLAY_X-100), random.randint(0, GUI.DISPLAY_Y), self.screen))
             if self.play_button.draw(self.screen):
                 print("Evolution starts")
+                self.start()
             if self.wall_button.draw(self.screen):
                 # print("Build a wall")
                 self.walls.append(Wall(random.randint(0, GUI.DISPLAY_X-100), random.randint(0, GUI.DISPLAY_Y), self.screen))
@@ -133,6 +140,16 @@ class GUI:
                     # pygame.quit()
 
             for obj in [*self.cells, *self.plants, *self.walls]:
+                obj.draw()
+            pygame.display.update()
+
+    def start(self):
+        CLOCK = pygame.time.Clock()
+        for _ in range(10):
+            CLOCK.tick(5)
+            self.environment.evolve()
+            self.cells = [Cell(ccell.x, ccell.y, self.screen) for ccell in self.environment.cells_objects]
+            for obj in self.cells:
                 obj.draw()
             pygame.display.update()
 
