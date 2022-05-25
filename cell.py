@@ -1,5 +1,5 @@
-from abc import abstractmethod
 from dataclasses import dataclass
+possible_cells = set('organism', 'plant', 'wall', 'empty')
 @dataclass
 class Cell:
     """
@@ -11,15 +11,26 @@ class Cell:
     light: int = 10
     organism: 'Organism' = None
 
-    @abstractmethod
     def __str__(self):
         return f"({self.x}, {self.y}) - {self.cell_type}"
-    @abstractmethod
+
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.cell_type == other.cell_type and self.organism == other.organism
-    @abstractmethod
+
     def __hash__(self):
         return hash((self.x, self.y))
+
+    def get_pos(self):
+        return self.x, self.y
+    
+    def get_type(self):
+        return self.cell_type
+
+    def get_light(self):
+        return self.light
+
+    def get_organism(self):
+        return self.organism
 
 if __name__ == "__main__":
     cell = Cell(1, 2, "wall", 10)
