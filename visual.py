@@ -35,7 +35,8 @@ class Cell(Object):
 
 
 class Plant(Object):
-    color = (74, 120, 0)
+    # color = (74, 120, 0)
+    color = (110, 212, 123)
     radius = 7
 
     def __init__(self, x, y, screen):
@@ -113,7 +114,7 @@ class GUI:
     DISPLAY_COLOR_NIGHT = (70, 80, 80)
     DISPLAY_COLOR_DAY = (135, 206, 235)
 
-    MENU_SIZE = 100
+    MENU_SIZE = 80
     MENU_COLOR_NIGHT = (30, 50, 50)
     MENU_COLOR_DAY = (255, 255, 255)
 
@@ -223,16 +224,17 @@ class GUI:
             # Play button
             if self.play_button.is_on and self.play_button.draw(self.screen):
                 self.play_button.turn_off()
-
+            if self.play_button.draw(self.screen):
+                self.play_button.turn_on()
+                print("Evolution starts")
+            
             # Quit button
             if self.quit_button.draw(self.screen):
                 run = False
-                pygame.quit()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
                     run = False
-                    pygame.quit()
 
             clock.tick(FPS)
 
