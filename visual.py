@@ -1,15 +1,15 @@
 import random, pygame, time, datetime
 
-#color palette
+# color palette
 SKY_BLUE = (135, 206, 235)
 YELLOW = (245, 236, 142)
 GREEN = (110, 212, 123)
 PURPLE = (150, 110, 212)
 RED = (247, 129, 134)
 
-
 FPS = 60
 clock = pygame.time.Clock()
+
 
 class Object:
     def __init__(self, x, y, screen):
@@ -59,7 +59,7 @@ class Wall(Object):
         pygame.draw.rect(self.screen, Wall.color,
                          (self.coordinate_x, self.coordinate_y, Wall.size[0], Wall.size[1]))
 
-           
+
 class Button():
     def __init__(self, x, y, path, path_on=None, created=None):
         img_off = pygame.image.load(path).convert_alpha()
@@ -80,11 +80,11 @@ class Button():
     def turn_on(self):
         self.is_on = True
         self.image = self.image_on
-    
+
     def turn_off(self):
         self.is_on = False
         self.image = self.image_off
-    
+
     def draw(self, surface):
         """Draws a button on screen."""
         action = False
@@ -94,7 +94,7 @@ class Button():
         # check mouseover and clecked conditions
         if self.rect.collidepoint(pos):
 
-            if pygame.mouse.get_pressed()[0] and not self.clicked: # 0 - left click
+            if pygame.mouse.get_pressed()[0] and not self.clicked:  # 0 - left click
 
                 self.clicked = True
                 action = True
@@ -133,7 +133,6 @@ class GUI:
         self.display_color = GUI.DISPLAY_COLOR_NIGHT
         self.menu_color = GUI.MENU_COLOR_NIGHT
 
-
         # load button images
         self.light_button = Button(940, 80, "images/idea.png", "images/idea_on.png")
         self.cell_button = Button(940, 180, "images/virus.png", "images/virus_on.png", "Cell")
@@ -151,25 +150,26 @@ class GUI:
         self.not_available_field = []
         self.light = False
 
-  def spawn_cell(self, name_class):
+
+    def spawn_cell(self, name_class):
         for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
 
-                    x, y = pygame.mouse.get_pos()
+                x, y = pygame.mouse.get_pos()
 
-                    if name_class == 'Cell':
-                        if self.available_coordinates(x, y, Cell.radius):
-                            self.cells.append(Cell(x, y, self.screen, (70, 10, 70)))
-                    elif name_class == 'Plant':
-                        if self.available_coordinates(x, y, Plant.radius):
-                            self.plants.append(Plant(x, y, self.screen))
-                    elif name_class == 'Wall':
-                        if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
-                            self.walls.append(Wall(x, y, self.screen))
-                            self.not_available_field.append(
-                                [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
-             
-   def button_navigate(self, button):
+                if name_class == 'Cell':
+                    if self.available_coordinates(x, y, Cell.radius):
+                        self.cells.append(Cell(x, y, self.screen))
+                elif name_class == 'Plant':
+                    if self.available_coordinates(x, y, Plant.radius):
+                        self.plants.append(Plant(x, y, self.screen))
+                elif name_class == 'Wall':
+                    if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
+                        self.walls.append(Wall(x, y, self.screen))
+                        self.not_available_field.append(
+                            [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
+
+    def button_navigate(self, button):
         self.button = button
         if self.button.is_on and self.button.draw(self.screen):
             self.button.turn_off()
@@ -180,7 +180,7 @@ class GUI:
                 self.button.turn_on()
         if self.button.is_on:
             self.spawn_cell(self.button.created_object)
-       
+
     def change_light(self):
         self.display_color = GUI.DISPLAY_COLOR_DAY \
             if self.display_color == GUI.DISPLAY_COLOR_NIGHT else GUI.DISPLAY_COLOR_NIGHT
@@ -214,21 +214,20 @@ class GUI:
             # Cell button
             self.button_navigate(self.cell_button)
 
-            #Plant button
+            # Plant button
             self.button_navigate(self.plant_button)
 
-            #Wall button
+            # Wall button
             self.button_navigate(self.wall_button)
 
-            #Play button
+            # Play button
             if self.play_button.is_on and self.play_button.draw(self.screen):
                 self.play_button.turn_off()
-            
-            #Quit button
+
+            # Quit button
             if self.quit_button.draw(self.screen):
                 run = False
                 pygame.quit()
-
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
@@ -236,8 +235,6 @@ class GUI:
                     pygame.quit()
 
             clock.tick(FPS)
-            
-                    
 
             self.screen.blit(self.font.render('Generation X', False, GUI.TEXT_COLOR), (10, 10))
             self.screen.blit(
@@ -247,6 +244,7 @@ class GUI:
             # pygame.draw.rect(self.screen, (0, 102, 204), (900, 686, 100, 7))
             # pygame.draw.rect(self.screen, (245, 191, 15), (900, 693, 100, 7))
             pygame.display.update()
+
 
 display = GUI()
 display.main()
