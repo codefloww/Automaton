@@ -191,6 +191,5 @@ class GUI:
             pygame.display.update()
 
 
-
 display = GUI()
 display.main()
