@@ -1,9 +1,4 @@
-import pygame, sys
-SKY_BLUE = (135, 206, 235)
-YELLOW = (245, 236, 142)
-GREEN = (110, 212, 123)
-PURPLE = (150, 110, 212)
-RED = (247, 129, 134)
+import pygame, time, datetime
 
 
 class Object:
@@ -42,7 +37,7 @@ class Plant(Object):
 
 
 class Wall(Object):
-    color = (20, 20, 20)
+    color = (51, 53, 53)
     size = (40, 40)
 
     def __init__(self, x, y, screen):
@@ -85,19 +80,28 @@ class Button:
 class GUI:
     DISPLAY_X = 1000
     DISPLAY_Y = 700
-    Field_SIZE = 100
-    DISPLAY_COLOR = (70, 80, 80)
-    MENU_COLOR = (30, 50, 50)
+    DISPLAY_COLOR_NIGHT = (70, 80, 80)
+    DISPLAY_COLOR_DAY = (135, 206, 235)
+
+    MENU_SIZE = 100
+    MENU_COLOR_NIGHT = (30, 50, 50)
+    MENU_COLOR_DAY = (255, 255, 255)
+
     TEXT_FONT = "arial.ttf"
     TEXT_SIZE = 25
+    TEXT_COLOR = (10, 20, 10)
 
     def __init__(self):
         pygame.init()
-        pygame.font.init()
-        self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
-        self.screen = pygame.display.set_mode((GUI.DISPLAY_X, GUI.DISPLAY_Y))  # create a screen
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
+        pygame.font.init()
+        self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
+
+        self.screen = pygame.display.set_mode((GUI.DISPLAY_X, GUI.DISPLAY_Y))  # create a screen
+        self.display_color = GUI.DISPLAY_COLOR_NIGHT
+        self.menu_color = GUI.MENU_COLOR_NIGHT
+
 
         # load button images
         self.light_button = Button(930, 100, "images/idea.png")
@@ -111,6 +115,7 @@ class GUI:
         self.walls = []
 
         self.not_available_field = []
+        self.light = False
 
     def spawn_cell(self, name_class):
         spawn = True
@@ -129,18 +134,36 @@ class GUI:
                             self.plants.append(Plant(x, y, self.screen))
                             spawn = False
                     elif name_class == 'Wall':
-                        if x <= GUI.DISPLAY_X-GUI.Field_SIZE-Wall.size[0]:
+                        if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                             self.walls.append(Wall(x, y, self.screen))
-                            self.not_available_field.append([range(x, x+Wall.size[0]+1), range(y, y+Wall.size[1]+1)])
+                            self.not_available_field.append(
+                                [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
+
                             spawn = False
 
+    def change_light(self):
+        self.display_color = GUI.DISPLAY_COLOR_DAY \
+            if self.display_color == GUI.DISPLAY_COLOR_NIGHT else GUI.DISPLAY_COLOR_NIGHT
+        self.menu_color = GUI.MENU_COLOR_DAY \
+            if self.menu_color == GUI.MENU_COLOR_NIGHT else GUI.MENU_COLOR_NIGHT
+        self.light = not self.light
+
+    def available_coordinates(self, x, y, radius):
+        x_coordinate = set(range(x - radius, x + radius + 1))
+        y_coordinate = set(range(y - radius, y + radius + 1))
+        for wall in self.not_available_field:
+            if set(wall[0]) & x_coordinate and set(wall[1]) & y_coordinate:
+                return False
+        return True
+
     def main(self):
+        time_start = time.time()
         run = True
         while run:
-            self.screen.fill(GUI.DISPLAY_COLOR)
+            self.screen.fill(self.display_color)
             for obj in [*self.cells, *self.plants, *self.walls]:
                 obj.draw()
-            pygame.draw.rect(self.screen, GUI.MENU_COLOR, pygame.Rect(GUI.DISPLAY_X-GUI.Field_SIZE, 0, 100, 700))
+            pygame.draw.rect(self.screen, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
 
             if self.light_button.draw(self.screen):
                 self.change_light()
@@ -158,28 +181,15 @@ class GUI:
                     run = False
                     pygame.quit()
 
-            text_surface = self.font.render('Generation 0', False, (10, 20, 10))
-            self.screen.blit(text_surface, (10, 10))
+            self.screen.blit(self.font.render('Generation X', False, GUI.TEXT_COLOR), (10, 10))
+            self.screen.blit(
+                self.font.render(f'Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}', False,
+                                 GUI.TEXT_COLOR), (10, 10 + GUI.TEXT_SIZE))
+
+            # pygame.draw.rect(self.screen, (0, 102, 204), (900, 686, 100, 7))
+            # pygame.draw.rect(self.screen, (245, 191, 15), (900, 693, 100, 7))
             pygame.display.update()
 
-    def change_light(self):
-        if GUI.DISPLAY_COLOR == (70, 80, 80):
-            GUI.DISPLAY_COLOR = SKY_BLUE
-        else:
-            GUI.DISPLAY_COLOR = (70, 80, 80)
-
-        if GUI.MENU_COLOR == (30, 50, 50):
-            GUI.MENU_COLOR = (255, 255, 255)
-        else:
-            GUI.MENU_COLOR = (30, 50, 50)
-
-    def available_coordinates(self, x, y, radius):
-        x_coordinate = set(range(x - radius, x + radius + 1))
-        y_coordinate = set(range(y - radius, y + radius + 1))
-        for wall in self.not_available_field:
-            if set(wall[0]) & x_coordinate and set(wall[1]) & y_coordinate:
-                return False
-        return True
 
 
 display = GUI()
