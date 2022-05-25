@@ -10,11 +10,17 @@ class Simulation:
 
     def run(self):
         self.gui.main()
-        for i in range(5):# like we have 5 steps in generation
-            # self.env.set_cell(i, 5, Cell(i, 5, 'organism'))
-            # here we need something to refresh the GUI
-            # like self.gui.refresh(self.env) or self.gui.update(self.env)
-            print(self.env.get_environment_state())
+        # self.env.set_cell(i, 5, Cell(i, 5, 'organism')) for setting the cell
+        # here we need something to refresh the GUI
+        # like self.gui.refresh(self.env) or self.gui.update(self.env)
+        print(self.env.get_environment_state())
+        self.run_simulation()
+
+    def run_simulation(self):
+        while True:
+            self.run()
+            self.generation += 1
+            print(f"Generation: {self.generation}")
         
 
 if __name__ == "__main__":
