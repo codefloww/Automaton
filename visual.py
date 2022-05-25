@@ -10,7 +10,6 @@ RED = (247, 129, 134)
 FPS = 60
 clock = pygame.time.Clock()
 
-
 class Object:
     def __init__(self, x, y, screen):
         self.coordinate_x = x
@@ -150,7 +149,6 @@ class GUI:
         self.not_available_field = []
         self.light = False
 
-
     def spawn_cell(self, name_class):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -207,8 +205,10 @@ class GUI:
 
             if self.light_button.is_on and self.light_button.draw(self.screen):
                 self.light_button.turn_off()
+                self.change_light()
             if self.light_button.draw(self.screen):
                 self.light_button.turn_on()
+                self.change_light()
                 print("Turn the light on")
 
             # Cell button
