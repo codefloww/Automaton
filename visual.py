@@ -158,7 +158,7 @@ class GUI:
 
     def start(self):
         CLOCK = pygame.time.Clock()
-        for _ in range(10):
+        while True:
             CLOCK.tick(5)
             self.environment.evolve()
             self.cells = [Cell(ccell.x, ccell.y, self.screen) for ccell in self.environment.cells_objects]
