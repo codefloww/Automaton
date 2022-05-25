@@ -143,15 +143,26 @@ class GUI:
                 obj.draw()
             pygame.display.update()
 
+    def screen_draw(self):
+        self.screen.fill(SKY_BLUE)
+        pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(920, 0, 100, 700))
+        self.light_button.draw(self.screen)
+        self.cell_button.draw(self.screen)
+        self.wall_button.draw(self.screen)
+        self.plant_button.draw(self.screen)
+        self.play_button.draw(self.screen)
+        self.quit_button.draw(self.screen)
+        for obj in [*self.cells, *self.plants, *self.walls]:
+            obj.draw()
+        pygame.display.update()
+
     def start(self):
         CLOCK = pygame.time.Clock()
         for _ in range(10):
             CLOCK.tick(5)
             self.environment.evolve()
             self.cells = [Cell(ccell.x, ccell.y, self.screen) for ccell in self.environment.cells_objects]
-            for obj in self.cells:
-                obj.draw()
-            pygame.display.update()
+            self.screen_draw()
 
 
 display = GUI()

@@ -27,5 +27,3 @@ class Cell:
             self.x -= 1
         elif direction == "right":
             self.x += 1
-
-

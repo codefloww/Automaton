@@ -18,4 +18,3 @@ class Environment:
     def evolve(self):
         for cell in self.cells_objects:
             cell.go(random.choice(["up", "down", "left", "right"]))
-    # підключитись до pygame і запустити просто рандомний рух
