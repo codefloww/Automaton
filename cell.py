@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-possible_cells = set('organism', 'plant', 'wall', 'empty')
+possible_cells = ['organism', 'plant', 'wall', 'empty']
 @dataclass
 class Cell:
     """

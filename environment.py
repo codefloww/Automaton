@@ -78,7 +78,7 @@ class Environment:
         states = []
         for row in self.grid:
             for cell in row:
-                states.append(cell.get_state())
+                states.append(cell.get_type())
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
