@@ -152,23 +152,20 @@ class GUI:
         self.not_available_field = []
         self.light = False
 
-  def spawn_cell(self, name_class):
+    def spawn_cell(self, name_class):
         for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-
-                    x, y = pygame.mouse.get_pos()
-
-                    if name_class == 'Cell':
-                        if self.available_coordinates(x, y, Cell.radius):
-                            self.cells.append(Cell(x, y, self.screen, (70, 10, 70)))
-                    elif name_class == 'Plant':
-                        if self.available_coordinates(x, y, Plant.radius):
-                            self.plants.append(Plant(x, y, self.screen))
-                    elif name_class == 'Wall':
-                        if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
-                            self.walls.append(Wall(x, y, self.screen))
-                            self.not_available_field.append(
-                                [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if name_class == 'Cell':
+                    if self.available_coordinates(x, y, Cell.radius):
+                        self.cells.append(Cell(x, y, self.screen))
+                elif name_class == 'Plant':
+                    if self.available_coordinates(x, y, Plant.radius):
+                        self.cells.append(Cell(x, y, self.screen))
+                elif name_class == 'Wall':
+                    if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
+                        self.walls.append(Wall(x, y, self.screen))
+                        self.not_available_field.append([range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
              
    def button_navigate(self, button):
         self.button = button
