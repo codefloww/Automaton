@@ -20,7 +20,6 @@ class Object:
         self.coordinate_x = (self.coordinate_x + x) % GUI.DISPLAY_X
         self.coordinate_y = (self.coordinate_y + y) % GUI.DISPLAY_Y
 
-
 class Cell(Object):
     radius = 10
 
@@ -60,7 +59,7 @@ class Wall(Object):
                          (self.coordinate_x, self.coordinate_y, Wall.size[0], Wall.size[1]))
 
 
-class Button():
+class Button:
     def __init__(self, x, y, path, path_on=None, created=None):
         img_off = pygame.image.load(path).convert_alpha()
         self.image_off = pygame.transform.scale(img_off, (40, 40))
