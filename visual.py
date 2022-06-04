@@ -138,7 +138,7 @@ class GUI:
         self.button = None
         self.cur_spawning_button = None
 
-        self.coeff = 1
+        self.coeff = 17
         self.environment = environment
 
         self.queue_cell = []
@@ -275,5 +275,5 @@ class GUI:
 
 
 if __name__ == '__main__':
-    display = GUI()
+    display = GUI(Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 17 + 1, GUI.DISPLAY_Y // 17 + 1))
     display.main()
