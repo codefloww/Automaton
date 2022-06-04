@@ -44,7 +44,7 @@ class Plant(Cell):
 
 class Wall(Cell):
     color = (51, 53, 53)
-    size = (11, 11)
+    size = (16, 16)
 
     def __init__(self, x, y):
         super().__init__(x, y, possible_cells[2])
@@ -117,12 +117,11 @@ class GUI:
     TEXT_COLOR = (10, 20, 10)
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
+
     def __init__(self, env = None):
         pygame.init()
-        pygame.display.set_caption("Evolution Game")
-        pygame.display.set_icon(
-            pygame.image.load("images/evolution.png")
-        )  # program image
+        pygame.display.set_caption('Evolution Game')
+        pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
         pygame.font.init()
         self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
         
@@ -130,47 +129,62 @@ class GUI:
         self.menu_color = GUI.MENU_COLOR_NIGHT
 
         # load button images
-        self.light_button = Button(940, 80, "images/idea.png", "images/idea_on.png")
-        self.cell_button = Button(
-            940, 180, "images/virus.png", "images/virus_on.png", "Cell"
-        )
-        self.wall_button = Button(
-            940, 280, "images/wall.png", "images/wall_on.png", "Wall"
-        )
-        self.plant_button = Button(
-            940, 380, "images/plant.png", "images/plant_on.png", "Plant"
-        )
-        self.play_button = Button(
-            940, 480, "images/play-button.png", "images/video-pause-button.png"
-        )
-        self.quit_button = Button(940, 580, "images/remove.png")
+        self.light_button = Button(940, 50, "images/idea.png", "images/idea_on.png")
+        self.cell_button = Button(940, 140, "images/virus.png", "images/virus_on.png", "Cell")
+        self.wall_button = Button(940, 230, "images/wall.png", "images/wall_on.png", "Wall")
+        self.plant_button = Button(940, 320, "images/plant.png", "images/plant_on.png", "Plant")
+        self.erase_button = Button(940, 410, "images/eraser.png", "images/eraser_on.png")
+        self.play_button = Button(940, 500, "images/play-button.png", "images/video-pause-button.png")
+        self.quit_button = Button(940, 590, "images/remove.png")
         self.button = None
         self.cur_spawning_button = None
 
+        self.coeff = 17
+        self.environment = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
 
-        self.environment = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
-        self.coeff = 12
+        self.queue_cell = []
+        self.light = False
+        self.erase = False
+        self.run = True
 
 
     def spawn_cell(self, name_class):
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z or event.key == pygame.KMOD_CTRL and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+                    delete = True
+                    while delete:
+                        if self.queue_cell:
+                            for x, y in self.queue_cell.pop():
+                                if self.environment.get_cell(x, y).cell_type is not None:
+                                    self.environment.set_cell(x, y, Cell(x, y))
+                                    delete = False
+                        else:
+                            delete = False
+
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-
                 x, y = pygame.mouse.get_pos()
-
-                if name_class == 'Cell':
-                    if self.available_coordinates(x, y, Organism.radius):
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Organism(x, y))
+                if self.erase:
+                    if x < GUI.DISPLAY_X-GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
+                            self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type is not None:
+                        self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y))
+                elif name_class == 'Cell':
+                    x = (x // self.coeff) * self.coeff + self.coeff//2
+                    y = (y // self.coeff) * self.coeff + self.coeff//2
+                    self.add_cell(x, y, Organism(x, y))
                 elif name_class == 'Plant':
-                    if self.available_coordinates(x, y, Plant.radius):
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Plant(x, y))
+                    self.add_cell(x, y, Plant(x, y))
                 elif name_class == 'Wall':
-                    for i in range(-1, 2):
+                    for i in range(-1, 1):
                         x_c = (x // self.coeff) * self.coeff + self.coeff*i
-                        for j in range(-1, 2):
+                        for j in range(-1, 1):
                             y_c = (y // self.coeff) * self.coeff + self.coeff*j
-                            if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
-                                self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
+
+                            self.add_cell(x_c, y_c, Wall(x_c, y_c), (16, i, j))
+            if event.type == pygame.QUIT:  # if press close button
+                self.run = False
+
 
     def button_navigate(self, button):
         self.button = button
@@ -185,29 +199,30 @@ class GUI:
             self.spawn_cell(self.button.created_object)
 
     def change_light(self):
-        self.display_color = (
-            GUI.DISPLAY_COLOR_DAY
-            if self.display_color == GUI.DISPLAY_COLOR_NIGHT
-            else GUI.DISPLAY_COLOR_NIGHT
-        )
-        self.menu_color = (
-            GUI.MENU_COLOR_DAY
-            if self.menu_color == GUI.MENU_COLOR_NIGHT
-            else GUI.MENU_COLOR_NIGHT
-        )
+        self.display_color = GUI.DISPLAY_COLOR_DAY \
+            if self.display_color == GUI.DISPLAY_COLOR_NIGHT else GUI.DISPLAY_COLOR_NIGHT
+        self.menu_color = GUI.MENU_COLOR_DAY \
+            if self.menu_color == GUI.MENU_COLOR_NIGHT else GUI.MENU_COLOR_NIGHT
         self.light = not self.light
 
-    def available_coordinates(self, x, y, radius):
-        if x >= GUI.DISPLAY_X-GUI.MENU_SIZE or y >= GUI.DISPLAY_Y:
+    def add_cell(self, x, y, cell, size=[0]):
+        if x >= GUI.DISPLAY_X-GUI.MENU_SIZE-size[0] or y >= GUI.DISPLAY_Y:
             return False
+        if cell.cell_type == 'wall':
+            self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+            if size[1] == -1 and size[2] == -1:
+                self.queue_cell.append([(x // self.coeff, y // self.coeff)])
+            else:
+                self.queue_cell[-1].append((x // self.coeff, y // self.coeff))
         if self.environment.grid[x//self.coeff][y//self.coeff].cell_type == 'wall':
             return False
+        self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+        self.queue_cell.append([(x // self.coeff, y // self.coeff)])
         return True
 
     def main(self):
         time_start = time.time()
-        run = True
-        while run:
+        while self.run:
             GUI.SCREEN.fill(self.display_color)
             for width in self.environment.grid:
                 for cell in width:
@@ -216,13 +231,12 @@ class GUI:
             pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
 
             if self.light_button.is_on and self.light_button.draw(GUI.SCREEN):
-
                 self.light_button.turn_off()
                 self.change_light()
             if self.light_button.draw(GUI.SCREEN):
                 self.light_button.turn_on()
                 self.change_light()
-
+            
             # Cell button
             self.button_navigate(self.cell_button)
 
@@ -239,13 +253,21 @@ class GUI:
                 self.play_button.turn_on()
                 print("Evolution starts")
 
+            # Erase button
+            if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
+                self.erase = False
+                self.erase_button.turn_off()
+            if self.erase_button.draw(GUI.SCREEN):
+                self.erase = True
+                self.erase_button.turn_on()
+
             # Quit button
             if self.quit_button.draw(GUI.SCREEN):
-                run = False
+                self.run = False
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
-                    run = False
+                    self.run = False
 
             clock.tick(FPS)
 
@@ -257,10 +279,6 @@ class GUI:
             pygame.display.update()
 
 
-
-if __name__ == "__main__":
-    import environment
-
-    env = environment.Environment(40, 30)
-    display = GUI(env)
+if __name__ == '__main__':
+    display = GUI()
     display.main()
