@@ -32,17 +32,24 @@ class Automata:
             if completed_action:
                 break
 
-    def move_ability(self, strength) -> None:
-        return strength
+    def move_ability(self, strength, ) -> None:
+        surr = self.see_ability(self._abilities_decider()[self.see_ability])
+        def seek_danger():
+            return [x for x in surr if x.organism != None]
+        def look_for_pray():
+            return [x for x in seek_danger() if x.organism.energy < self.energy] # замість self.energy підбиратимемо по силі бою, але зараз йой най буде
+        def look_for_food():
+            return [x for x in surr if x.cell_type == "plant"]
+        danger_cells = seek_danger()
+        pray_cells = look_for_pray()
+        food_cells = look_for_food()
+
+        # починаю прописувати логіку рішень
+        if len(danger_cells) > 0:
+            1 
 
     def see_ability(self, strength) -> None:
-        def seek_danger(surr):
-            if len(list(filter(None, [x.organism for x in surr]))) == 0:
-                return True
-        surr = self.env.get_neighbors(self.x, self.y, strength)
-        for i in surr :
-            if i.organism == None and not seek_danger(surr):
-                self.move_ability(self._abilities_decider()[self.move_ability])
+        return self.env.get_neighbors(self.x, self.y, strength)
 
     def eat_ability(self, strength) -> None:
         pass
@@ -85,6 +92,6 @@ if __name__ == "__main__":
     my_cell = env.get_cell(0, 0)
     my_cell.organism = Automata(my_cell, env)
     my_man = my_cell.organism
-    print(my_man.see_ability(1))
+    print(my_man.move_ability(1))
 
 
