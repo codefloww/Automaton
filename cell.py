@@ -13,7 +13,7 @@ class Cell:
     cell_type: str = "empty"
     organism: 'Organism' = None
 
-    def __init__(self, x, y, cell_type=None):
+    def __init__(self, x, y, cell_type='empty'):
         self.x = x
         self.y = y
         self.cell_type = cell_type
@@ -41,7 +41,8 @@ class Cell:
     def get_organism(self):
         return self.organism
 
+
 if __name__ == "__main__":
-    cell = Cell(1, 2, "wall", 10)
+    cell = Cell(1, 2, "wall")
     print(cell)
 

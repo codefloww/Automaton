@@ -1,10 +1,10 @@
 from visual import GUI
+from environment import Environment
 
 
 class Simulation:
-
     def __init__(self, env=None):
-        self.env = env or Environment(40, 30)
+        self.env = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 17 + 1, GUI.DISPLAY_Y // 17 + 1)
         self.gui = GUI(self.env)
         self.generation = 0
 

@@ -118,7 +118,7 @@ class GUI:
     TEXT_COLOR = (10, 20, 10)
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-    def __init__(self):
+    def __init__(self, environment):
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -138,8 +138,8 @@ class GUI:
         self.button = None
         self.cur_spawning_button = None
 
-        self.coeff = 17
-        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
+        self.coeff = 1
+        self.environment = environment
 
         self.queue_cell = []
         self.light = False
@@ -154,18 +154,17 @@ class GUI:
                     while delete:
                         if self.queue_cell:
                             for x, y in self.queue_cell.pop():
-                                if self.environment.get_cell(x, y).cell_type is not None:
+                                if self.environment.get_cell(x, y).cell_type != 'empty':
                                     self.environment.set_cell(x, y, Cell(x, y))
                                     delete = False
                         else:
                             delete = False
 
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if self.erase:
                     if x < GUI.DISPLAY_X-GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
-                            self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type is not None:
+                            self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type != 'empty':
                         self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y))
                 elif name_class == 'Cell':
                     x = (x // self.coeff) * self.coeff + self.coeff//2
@@ -222,7 +221,7 @@ class GUI:
             GUI.SCREEN.fill(self.display_color)
             for width in self.environment.grid:
                 for cell in width:
-                    if cell.cell_type is not None:
+                    if cell.cell_type != 'empty':
                         cell.draw()
             pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
 
