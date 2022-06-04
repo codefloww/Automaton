@@ -1,6 +1,9 @@
 """module for discrete evolving automata"""
 import random
+
+from math import sqrt
 from environment import Environment
+from cell import Cell
 
 class Automata:
     def __init__(self, cell, env) -> None:
@@ -32,21 +35,42 @@ class Automata:
             if completed_action:
                 break
 
-    def move_ability(self, strength, ) -> None:
+    def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
-        def seek_danger():
+        def escape(danger_cells):
+            possible_moves = []
+
+            # розраховує всі можливі рухи
+            for i in range(-strength, strength+1):
+                for j in range(-strength, strength+1):
+                    if abs(i) + abs(j) <= strength and self.x + i >= 0 and self.y + j >= 0:
+                        possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
+                             self.env.get_cell(self.x+i, self.y+j).organism == None else 1
+            # визначає найкращі за векторним добутком
+            ranges = []
+            for i in danger_cells:
+                ranges.append([(cell, round(sqrt(abs(cell.x - i.x) + abs(cell.y - i.y)))) for cell in possible_moves])
+            return # тут насправді має бути вибір найпідходящішої позиції з ліста ranges, який містить варіанти втечі
+
+        def look_for_danger():
             return [x for x in surr if x.organism != None]
         def look_for_pray():
-            return [x for x in seek_danger() if x.organism.energy < self.energy] # замість self.energy підбиратимемо по силі бою, але зараз йой най буде
+            return [x for x in look_for_danger() if x.organism.energy <= self.energy] # замість self.energy підбиратимемо по силі бою, але зараз йой най буде
         def look_for_food():
             return [x for x in surr if x.cell_type == "plant"]
-        danger_cells = seek_danger()
+        danger_cells = look_for_danger()
         pray_cells = look_for_pray()
         food_cells = look_for_food()
 
         # починаю прописувати логіку рішень
-        if len(danger_cells) > 0:
-            1 
+        if len(pray_cells) > 0:
+            escape(pray_cells) #move_towards
+        elif len(danger_cells) > 0:
+            escape()
+        elif len(food_cells) > 0:
+            move_towards()
+        else :
+            move_towards()
 
     def see_ability(self, strength) -> None:
         return self.env.get_neighbors(self.x, self.y, strength)
@@ -90,8 +114,14 @@ class Automata:
 if __name__ == "__main__":
     env = Environment(10, 10)
     my_cell = env.get_cell(0, 0)
+    enemy_cell = Cell(1, 0)
+    enemy_cell.organism = Automata(enemy_cell, env)
+    env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+    enemy_cell = Cell(2, 0)
+    enemy_cell.organism = Automata(enemy_cell, env)
+    env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
     my_cell.organism = Automata(my_cell, env)
     my_man = my_cell.organism
-    print(my_man.move_ability(1))
+    print(my_man.move_ability(2))
 
 
