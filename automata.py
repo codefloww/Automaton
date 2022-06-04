@@ -50,9 +50,26 @@ class Automata:
     def move_ability(self, strength) -> None:
         if self.energy < self.DEFAULT_ENERGY_TO_MOVE:
             return
-        x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1)])
-        self.x += x
-        self.y += y
+        if strength == '00':
+            x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1)])
+            self.x += x
+            self.y += y
+            self.energy -= 1
+        elif strength == '01':
+            x, y = random.choice([(2, 0), (0, 2), (-2, 0), (0, -2)])
+            self.x += x
+            self.y += y
+            self.energy -= 2
+        elif strength == '10':
+            x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (1, -1), (-1, -1), (-1, 1)])
+            self.x += x
+            self.y += y
+            self.energy -= 1
+        elif strength == '11':
+            x, y = random.choice([(2, 0), (0, 2), (-2, 0), (0, -2), (2, 2), (2, -2), (-2, -2), (-2, 2)])
+            self.x += x
+            self.y += y
+            self.energy -= 2
 
     def see_ability(self, strength) -> None:
         pass
