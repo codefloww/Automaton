@@ -1,4 +1,3 @@
-
 import datetime
 import pygame
 import random
@@ -18,8 +17,8 @@ RED = (247, 129, 134)
 FPS = 60
 clock = pygame.time.Clock()
 
-class Organism(Cell):
 
+class Organism(Cell):
     radius = 10
 
     def __init__(self, x, y):
@@ -32,7 +31,6 @@ class Organism(Cell):
                            (self.x, self.y), Organism.radius)
 
 
-
 class Plant(Cell):
     color = (110, 212, 123)
     radius = 7
@@ -43,8 +41,6 @@ class Plant(Cell):
     def draw(self):
         pygame.draw.circle(GUI.SCREEN, Plant.color,
                            (self.x, self.y), Plant.radius, 4)
-
-
 
 class Wall(Cell):
     color = (51, 53, 53)
@@ -121,7 +117,7 @@ class GUI:
     TEXT_COLOR = (10, 20, 10)
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-    def __init__(self, env):
+    def __init__(self, env = None):
         pygame.init()
         pygame.display.set_caption("Evolution Game")
         pygame.display.set_icon(
@@ -129,7 +125,7 @@ class GUI:
         )  # program image
         pygame.font.init()
         self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
-
+        
         self.display_color = GUI.DISPLAY_COLOR_NIGHT
         self.menu_color = GUI.MENU_COLOR_NIGHT
 
@@ -151,11 +147,10 @@ class GUI:
         self.button = None
         self.cur_spawning_button = None
 
+
         self.environment = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
         self.coeff = 12
 
-        self.not_available_field = []
-        self.light = False
 
     def spawn_cell(self, name_class):
         for event in pygame.event.get():
@@ -176,7 +171,6 @@ class GUI:
                             y_c = (y // self.coeff) * self.coeff + self.coeff*j
                             if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                                 self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
-
 
     def button_navigate(self, button):
         self.button = button
@@ -259,7 +253,6 @@ class GUI:
             GUI.SCREEN.blit(
                 self.font.render(f'Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}', False,
                                  GUI.TEXT_COLOR), (10, 10 + GUI.TEXT_SIZE))
-
 
             pygame.display.update()
 

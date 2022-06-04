@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-
-possible_cells = ["organism", "plant", "wall", "empty"]
-
+possible_cells = ['organism', 'plant', 'wall', 'empty']
 
 
 @dataclass
@@ -13,8 +11,8 @@ class Cell:
     x: int
     y: int
     cell_type: str = "empty"
-    light: int = 10
-    organism: "Organism" = None
+    organism: 'Organism' = None
+
 
     def __init__(self, x, y, cell_type):
         self.x = x

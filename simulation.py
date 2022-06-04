@@ -1,9 +1,8 @@
-from environment import Environment
-from cell import Cell
 from visual import GUI
 
 
 class Simulation:
+
     def __init__(self, env=None):
         self.env = env or Environment(40, 30)
         self.gui = GUI(self.env)
@@ -16,7 +15,7 @@ class Simulation:
         # like self.gui.refresh(self.env) or self.gui.update(self.env)
 
     def run_simulation(self):
-        print(self.env)
+        print(self.gui.environment)
         for i in range(100):
             print(i)
 
