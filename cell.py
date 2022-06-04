@@ -14,7 +14,7 @@ class Cell:
     organism: 'Organism' = None
 
 
-    def __init__(self, x, y, cell_type):
+    def __init__(self, x, y, cell_type=None):
         self.x = x
         self.y = y
         self.cell_type = cell_type
