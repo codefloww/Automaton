@@ -73,7 +73,7 @@ class Automata:
 
         # починаю прописувати логіку рішень
         if len(pray_cells) > 0:
-            self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" ")) #move_towards
+            self.x, self.y = (int(x) for x in escape(pray_cells).split(" ")) #move_towards
         elif len(danger_cells) > 0:
             escape(danger_cells)
         elif len(food_cells) > 0:
