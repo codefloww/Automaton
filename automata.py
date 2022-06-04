@@ -1,78 +1,58 @@
 """module for discrete evolving automata"""
 import random
-
+from environment import Environment
 
 class Automata:
-    def __init__(self) -> None:
+    def __init__(self, cell, env) -> None:
         self.GENOME_SIZE = 8
-        self.genome = "0" * (2 * self.GENOME_SIZE)
+        self.genome = '1'*(2*self.GENOME_SIZE)
+        # self.health = 10
         self.age = 0
-        self.energy = 10
-        self.x = None
-        self.y = None
-
-        self.DEFAULT_ENERGY_TO_MOVE = 2
+        self.energy = 4
+        self.cell = cell
+        self.x = self.cell.x
+        self.y = self.cell.y
+        self.env = env
 
     def __str__(self) -> str:
-        pass
+        return f"{self.get_genome()} - {self.x}, {self.y}"
 
     def _abilities_decider(self) -> dict:
-        abilities_namings = [
-            self.see_ability,
-            self.move_ability,
-            self.eat_ability,
-            self.kill_ability,
-            self.hybernate_ability,
-            self.photosyth_ability,
-            self.reproduce_ability,
-            self.produce_ability,
-        ]
-        abilities_strength = list(
-            map(
-                lambda x: int(self.genome[x : x + 2]), range(0, self.GENOME_SIZE * 2, 2)
-            )
-        )
-        abilities = {
-            abilities_namings[i]: abilities_strength[i]
-            for i in range(len(abilities_namings))
-        }
+        abilities_namings = [self.see_ability, self.move_ability, self.eat_ability,  self.kill_ability,self.hybernate_ability, self.photosynth_ability, self.reproduce_ability,self.produce_ability]
+        abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
+        abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
 
-    def _behavior_decider(self) -> None:
+    def _behavior_decider(self)->None:
         abilities = self._abilities_decider()
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
-                completed_action = ability(abilities[ability])
+                completed_action = ability(abilities[ability], self.env)
             if completed_action:
                 break
 
-    def move_ability(self, strength) -> None:
-        if self.energy < self.DEFAULT_ENERGY_TO_MOVE:
-            return
-        if strength == '00':
-            x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1)])
-            self.x += x
-            self.y += y
-            self.energy -= 1
-        elif strength == '01':
-            x, y = random.choice([(2, 0), (0, 2), (-2, 0), (0, -2)])
-            self.x += x
-            self.y += y
-            self.energy -= 2
-        elif strength == '10':
-            x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (1, -1), (-1, -1), (-1, 1)])
-            self.x += x
-            self.y += y
-            self.energy -= 1
-        elif strength == '11':
-            x, y = random.choice([(2, 0), (0, 2), (-2, 0), (0, -2), (2, 2), (2, -2), (-2, -2), (-2, 2)])
-            self.x += x
-            self.y += y
-            self.energy -= 2
+    def move_ability(self, strength, ) -> None:
+        surr = self.see_ability(self._abilities_decider()[self.see_ability])
+
+        def seek_danger():
+            return [x for x in surr if x.organism != None]
+
+        def look_for_pray():
+            return [x for x in seek_danger() if x.organism.energy < self.energy] # замість self.energy підбиратимемо по силі бою, але зараз йой най буде
+
+        def look_for_food():
+            return [x for x in surr if x.cell_type == "plant"]
+        danger_cells = seek_danger()
+        pray_cells = look_for_pray()
+        food_cells = look_for_food()
+
+        # починаю прописувати логіку рішень
+        if len(danger_cells) > 0:
+            1
 
     def see_ability(self, strength) -> None:
-        pass
+        return self.env.get_neighbors(self.x, self.y, strength)
 
     def eat_ability(self, strength) -> None:
         pass
@@ -81,24 +61,26 @@ class Automata:
         pass
 
     def kill_ability(self, strength) -> None:
-        pass
+        """
+        strength:
+        '00' - can't kill
+        '01' -
+        '10' -
+        '11' -
+        """
 
-    def photosyth_ability(self, strength) -> None:
+    def photosynth_ability(self, strength) -> None:
         pass
 
     def produce_ability(self, strength) -> None:
-        pass
+        self
 
     def hybernate_ability(self, strength) -> None:
-        pass
+        self.energy += strength if self.energy + strength <= 10 else 10 - self.energy
 
     def mutate(self) -> None:
         mutation_position = random.randint(0, self.GENOME_SIZE)
-        self.genome = (
-            self.genome[:mutation_position]
-            + str(int(self.genome[mutation_position]) ^ 1)
-            + self.genome[mutation_position + 1:]
-        )
+        self.genome = self.genome[:mutation_position] + str(int(self.genome[mutation_position])^1) + self.genome[mutation_position+1:]
 
     def crossover(self, other) -> None:
         if not isinstance(other, Automata):
@@ -120,3 +102,10 @@ class Automata:
 
     def get_energy(self) -> int:
         return self.energy
+
+    def get_age(self) -> int:
+        return self.age
+
+    def get_energy(self) -> int:
+        return self.energy
+

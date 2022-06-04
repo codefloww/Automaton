@@ -5,8 +5,7 @@ class Environment:
     """
     An environment.
     """
-
-    def __init__(self, width, height, cell_type="empty", lighting=None):
+    def __init__(self, width, height, cell_type = None, lighting = None):
         """
         Initialize the environment.
         """
@@ -86,8 +85,19 @@ class Environment:
         """
         self.grid[x][y] = cell
 
-    def get_neighbors(self, x, y):
-        pass
+    def get_neighbors(self, x, y, see_dist = 1):
+        """
+        Gets the neighbors of a cell at the specified coordinates.
+        """
+        output = []
+        for i in range(-see_dist, see_dist+1):
+            for j in range(-see_dist, see_dist+1):
+                try :
+                    output.append(self.get_cell(x + i, y + j)) if \
+                     (x+i, y+j) != (x, y) and x + i >= 0 and y + j >= 0 else 1
+                except IndexError:
+                    pass
+        return output
 
     def get_environment_state(self):
         """
@@ -97,7 +107,7 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
-
+        return states
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
