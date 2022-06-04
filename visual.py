@@ -42,7 +42,6 @@ class Plant(Cell):
         pygame.draw.circle(GUI.SCREEN, Plant.color,
                            (self.x, self.y), Plant.radius, 4)
 
-
 class Wall(Cell):
     color = (51, 53, 53)
     size = (16, 16)
@@ -118,12 +117,14 @@ class GUI:
     TEXT_COLOR = (10, 20, 10)
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-    def __init__(self):
+
+    def __init__(self, env = None):
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
         pygame.font.init()
         self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
+        
         self.display_color = GUI.DISPLAY_COLOR_NIGHT
         self.menu_color = GUI.MENU_COLOR_NIGHT
 
@@ -139,12 +140,13 @@ class GUI:
         self.cur_spawning_button = None
 
         self.coeff = 17
-        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
+        self.environment = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
 
         self.queue_cell = []
         self.light = False
         self.erase = False
         self.run = True
+
 
     def spawn_cell(self, name_class):
         for event in pygame.event.get():
@@ -178,9 +180,11 @@ class GUI:
                         x_c = (x // self.coeff) * self.coeff + self.coeff*i
                         for j in range(-1, 1):
                             y_c = (y // self.coeff) * self.coeff + self.coeff*j
+
                             self.add_cell(x_c, y_c, Wall(x_c, y_c), (16, i, j))
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
+
 
     def button_navigate(self, button):
         self.button = button
