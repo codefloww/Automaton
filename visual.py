@@ -1,5 +1,5 @@
 import random, pygame, time, datetime
-
+import cell, automata
 # color palette
 SKY_BLUE = (135, 206, 235)
 YELLOW = (245, 236, 142)
@@ -121,7 +121,7 @@ class GUI:
     TEXT_SIZE = 25
     TEXT_COLOR = (10, 20, 10)
 
-    def __init__(self):
+    def __init__(self, env):
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -145,7 +145,7 @@ class GUI:
         self.cells = []
         self.plants = []
         self.walls = []
-
+        self.environment = env
         self.not_available_field = []
         self.light = False
 
@@ -154,16 +154,19 @@ class GUI:
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 x, y = pygame.mouse.get_pos()
-
+                x_nor, y_nor = x//30, y//30
                 if name_class == 'Cell':
-                    if self.available_coordinates(x, y, Cell.radius):
+                    if self.available_coordinates(x_nor, y_nor):
                         self.cells.append(Cell(x, y, self.screen))
+                        self.environment.set_cell(x_nor, y_nor, cell.Cell(x_nor, y_nor, 'organism',organism=automata.Automata()))
                 elif name_class == 'Plant':
-                    if self.available_coordinates(x, y, Plant.radius):
+                    if self.available_coordinates(x_nor, y_nor):
                         self.plants.append(Plant(x, y, self.screen))
+                        self.environment.set_cell(x_nor, y_nor, cell.Cell(x_nor, y_nor, 'plant'))
                 elif name_class == 'Wall':
                     if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                         self.walls.append(Wall(x, y, self.screen))
+                        self.environment.set_cell(x_nor, y_nor, cell.Cell(x_nor, y_nor, 'wall'))
                         self.not_available_field.append(
                             [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
 
@@ -186,13 +189,8 @@ class GUI:
             if self.menu_color == GUI.MENU_COLOR_NIGHT else GUI.MENU_COLOR_NIGHT
         self.light = not self.light
 
-    def available_coordinates(self, x, y, radius):
-        x_coordinate = set(range(x - radius, x + radius + 1))
-        y_coordinate = set(range(y - radius, y + radius + 1))
-        for wall in self.not_available_field:
-            if set(wall[0]) & x_coordinate and set(wall[1]) & y_coordinate:
-                return False
-        return True
+    def available_coordinates(self, x, y):
+        return self.environment.get_cell(x,y).get_type() == 'empty'
 
     def main(self):
         time_start = time.time()
@@ -246,6 +244,8 @@ class GUI:
             # pygame.draw.rect(self.screen, (245, 191, 15), (900, 693, 100, 7))
             pygame.display.update()
 
-
-display = GUI()
-display.main()
+if __name__ == "__main__":
+    import environment
+    env = environment.Environment(40, 30)
+    display = GUI(env)
+    display.main()
