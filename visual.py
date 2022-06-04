@@ -208,7 +208,7 @@ class GUI:
                                 range(y, y + Wall.size[1] + 1),
                             ]
                         )
-        print(self.environment.get_cells_pos("organism"))
+        print(f'organism:{self.environment.get_cells_pos("organism")}, plant:{self.environment.get_cells_pos("plant")}, wall:{self.environment.get_cells_pos("wall")}')
 
     def button_navigate(self, button):
         self.button = button

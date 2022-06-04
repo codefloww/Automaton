@@ -5,8 +5,8 @@ from visual import GUI
 
 class Simulation:
     def __init__(self, env=None):
-        self.env = env or Environment(10, 10)
-        self.gui = GUI()
+        self.env = env or Environment(40, 30)
+        self.gui = GUI(self.env)
         self.generation = 0
 
     def run(self):
