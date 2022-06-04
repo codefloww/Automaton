@@ -1,29 +1,26 @@
-# class Automaton:
-#     """
-#     class for abstract machines maybe
-#     """
-
+from abc import abstractmethod
+from dataclasses import dataclass
+@dataclass
 class Cell:
-    def __init__(self, x, y, genome: list = None):
-        self.x = x
-        self.y = y
-        self.genome = genome
-        # genome = [weight, reaction, ...]
+    """
+    A cell in the environment.
+    """
+    x: int
+    y: int
+    cell_type: str = "empty"
+    light: int = 10
+    organism: 'Organism' = None
 
+    @abstractmethod
     def __str__(self):
-        return f"cell on ({self.x},{self.y}) with genome = {self.genome}"
+        return f"({self.x}, {self.y}) - {self.cell_type}"
+    @abstractmethod
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.cell_type == other.cell_type and self.organism == other.organism
+    @abstractmethod
+    def __hash__(self):
+        return hash((self.x, self.y))
 
-    def go(self, direction: str):
-        """
-        provides moving cell in one of four main directions
-        :param direction:
-        :return:
-        """
-        if direction == "up":
-            self.y -= 1
-        elif direction == "down":
-            self.y += 1
-        elif direction == "left":
-            self.x -= 1
-        elif direction == "right":
-            self.x += 1
+if __name__ == "__main__":
+    cell = Cell(1, 2, "wall", 10)
+    print(cell)
