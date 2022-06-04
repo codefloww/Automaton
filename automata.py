@@ -11,10 +11,12 @@ class Automata:
         self.x = None
         self.y = None
 
+        self.DEFAULT_ENERGY_TO_MOVE = 2
+
     def __str__(self) -> str:
         pass
 
-    def _abilities_decider(self) -> None:
+    def _abilities_decider(self) -> dict:
         abilities_namings = [
             self.see_ability,
             self.move_ability,
@@ -46,7 +48,11 @@ class Automata:
                 break
 
     def move_ability(self, strength) -> None:
-        pass
+        if self.energy < self.DEFAULT_ENERGY_TO_MOVE:
+            return
+        x, y = random.choice([(1, 0), (0, 1), (-1, 0), (0, -1)])
+        self.x += x
+        self.y += y
 
     def see_ability(self, strength) -> None:
         pass
@@ -74,7 +80,7 @@ class Automata:
         self.genome = (
             self.genome[:mutation_position]
             + str(int(self.genome[mutation_position]) ^ 1)
-            + self.genome[mutation_position + 1 :]
+            + self.genome[mutation_position + 1:]
         )
 
     def crossover(self, other) -> None:
