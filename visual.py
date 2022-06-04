@@ -118,14 +118,18 @@ class GUI:
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
     def __init__(self, environment):
+        """
+        initialisation of the display, started color theme, buttons
+        """
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
         pygame.font.init()
+
         self.font = pygame.font.SysFont("arial.ttf", 25)
         self.menu_color = (30, 50, 50)
-
         self.display_image = Background("images/green_bg.png", [0, 0]).image
+
         # load button images
         self.light_button = Button(940, 50, "images/idea.png", "images/idea_on.png")
         self.cell_button = Button(940, 140, "images/virus.png", "images/virus_on.png", "Cell")
@@ -139,27 +143,30 @@ class GUI:
 
         self.coeff = GUI.DISPLAY_X // environment.width
         self.environment = environment
-
         self.queue_cell = []
         self.erase = False
         self.run = True
 
     def spawn_cell(self, name_class):
+        """
+        user can spawn or erase(/Сtrl+Z) сells
+        """
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_z or event.key == pygame.KMOD_CTRL and pygame.key.get_mods() & pygame.KMOD_LCTRL:
-                    delete = True
-                    while delete:
+                if event.key == pygame.K_z or event.key == pygame.KMOD_CTRL:
+                    deleted = False
+                    while not deleted:
                         if self.queue_cell:
                             for x, y in self.queue_cell.pop():
                                 if self.environment.get_cell(x, y).cell_type != 'empty':
                                     self.environment.set_cell(x, y, Cell(x, y, self.environment.light))
-                                    delete = False
+                                    deleted = True
                         else:
-                            delete = False
+                            deleted = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
+
                 if self.erase:
                     if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                             self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type != 'empty':
@@ -175,7 +182,7 @@ class GUI:
                         x_c = (x // self.coeff) * self.coeff + self.coeff * i
                         for j in range(-1, 1):
                             y_c = (y // self.coeff) * self.coeff + self.coeff * j
-                            self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), (16, i, j))
+                            self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), [16, i, j])
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
 
@@ -192,32 +199,43 @@ class GUI:
             self.spawn_cell(self.button.created_object)
 
     def change_light(self):
+        """
+        change colors on the screen;
+        change light argument in the environment;
+        """
         self.environment.light = not self.environment.light
         if self.environment.light:
-            self.environment.change_cell_light(True)
+            self.environment.set_light(True)
             self.display_image = Background("images/blue_bg.png", [0, 0]).image
             self.menu_color = (255, 255, 255)
         else:
-            self.environment.change_cell_light(False)
+            self.environment.set_light(False)
             self.display_image = Background("images/green_bg.png", [0, 0]).image
             self.menu_color = (30, 50, 50)
 
-    def add_cell(self, x, y, cell, size=[0]):
-        if x >= GUI.DISPLAY_X - GUI.MENU_SIZE - size[0] or y >= GUI.DISPLAY_Y:
-            return False
+    def add_cell(self, x, y, cell, size=None):
+        """
+        check (x, y) coordinates;
+        add cells to the grid and queue if coordinates is correct;
+        """
         if cell.cell_type == 'wall':
-            self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
-            if size[1] == -1 and size[2] == -1:
+            if x < GUI.DISPLAY_X - GUI.MENU_SIZE - size[0] or y <= GUI.DISPLAY_Y:
+                self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+                if size[1] == -1 and size[2] == -1:
+                    self.queue_cell.append([(x // self.coeff, y // self.coeff)])
+                else:
+                    self.queue_cell[-1].append((x // self.coeff, y // self.coeff))
+        else:
+            if x < GUI.DISPLAY_X - GUI.MENU_SIZE or y < GUI.DISPLAY_Y:
+                self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
                 self.queue_cell.append([(x // self.coeff, y // self.coeff)])
-            else:
-                self.queue_cell[-1].append((x // self.coeff, y // self.coeff))
-        if self.environment.grid[x // self.coeff][y // self.coeff].cell_type == 'wall':
-            return False
-        self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
-        self.queue_cell.append([(x // self.coeff, y // self.coeff)])
-        return True
+                return True
+        return False
 
     def main(self):
+        """
+        draw all objects that could be changed
+        """
         time_start = time.time()
         while self.run:
             GUI.SCREEN.blit(self.display_image, (0, 0))
@@ -248,7 +266,6 @@ class GUI:
                 self.play_button.turn_off()
             if self.play_button.draw(GUI.SCREEN):
                 self.play_button.turn_on()
-                print("Evolution starts")
 
             # Erase button
             if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):

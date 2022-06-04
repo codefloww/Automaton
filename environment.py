@@ -104,7 +104,7 @@ class Environment:
         """
         return (self.height-y)/self.height
 
-    def change_cell_light(self, boolean):
+    def set_light(self, boolean):
         """
         change cell.light for every object in grid
         """
