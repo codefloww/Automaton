@@ -45,7 +45,7 @@ class Plant(Cell):
 
 class Wall(Cell):
     color = (51, 53, 53)
-    size = (11, 11)
+    size = (16, 16)
 
     def __init__(self, x, y):
         super().__init__(x, y, possible_cells[2])
@@ -138,10 +138,12 @@ class GUI:
         self.button = None
         self.cur_spawning_button = None
 
-        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
-        self.coeff = 12
+        self.coeff = 17
+        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
+
         self.not_available_field = []
         self.light = False
+        self.erase = False
         self.run = True
 
     def spawn_cell(self, name_class):
@@ -150,21 +152,28 @@ class GUI:
 
                 x, y = pygame.mouse.get_pos()
 
-                if name_class == 'Cell':
+                if self.erase:
+                    if x < GUI.DISPLAY_X-GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
+                            self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type is not None:
+                        self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y))
+                elif name_class == 'Cell':
+                    print('cell')
+                    x = (x // self.coeff) * self.coeff + self.coeff//2
+                    y = (y // self.coeff) * self.coeff + self.coeff//2
                     if self.available_coordinates(x, y, Organism.radius):
                         self.environment.set_cell(x // self.coeff, y // self.coeff, Organism(x, y))
                 elif name_class == 'Plant':
                     if self.available_coordinates(x, y, Plant.radius):
                         self.environment.set_cell(x // self.coeff, y // self.coeff, Plant(x, y))
                 elif name_class == 'Wall':
-                    for i in range(-1, 2):
+                    for i in range(-1, 1):
                         x_c = (x // self.coeff) * self.coeff + self.coeff*i
-                        for j in range(-1, 2):
+                        for j in range(-1, 1):
                             y_c = (y // self.coeff) * self.coeff + self.coeff*j
                             if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                                 self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
             if event.type == pygame.QUIT:  # if press close button
-                self.run= False
+                self.run = False
 
     def button_navigate(self, button):
         self.button = button
@@ -194,7 +203,6 @@ class GUI:
 
     def main(self):
         time_start = time.time()
-        i = 0
         while self.run:
             GUI.SCREEN.fill(self.display_color)
             for width in self.environment.grid:
@@ -225,10 +233,13 @@ class GUI:
             if self.play_button.draw(GUI.SCREEN):
                 self.play_button.turn_on()
                 print("Evolution starts")
-            
+
+            # Erase button
             if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
+                self.erase = False
                 self.erase_button.turn_off()
             if self.erase_button.draw(GUI.SCREEN):
+                self.erase = True
                 self.erase_button.turn_on()
                 print("Erase")
 
