@@ -14,8 +14,8 @@ class Environment:
         self.width = width
         self.height = height
         self.size = width * height
-        self.grid = [[Cell(x, y, cell_type) for y in range(height)] for x in range(width)]
-
+        self.light = False
+        self.grid = [[Cell(x, y, self.light, cell_type) for y in range(height)] for x in range(width)]
 
     def __str__(self):
         """
@@ -103,6 +103,14 @@ class Environment:
         0 <= coefficient <= 1
         """
         return (self.height-y)/self.height
+
+    def change_cell_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
 
 
 if __name__ == "__main__":

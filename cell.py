@@ -10,13 +10,9 @@ class Cell:
 
     x: int
     y: int
+    light: bool = False
     cell_type: str = "empty"
     organism: 'Organism' = None
-
-    def __init__(self, x, y, cell_type='empty'):
-        self.x = x
-        self.y = y
-        self.cell_type = cell_type
 
     def __str__(self):
         return f"({self.x}, {self.y}) - {self.cell_type}"
@@ -37,6 +33,9 @@ class Cell:
 
     def get_type(self):
         return self.cell_type
+
+    def get_light(self):
+        return self.light
 
     def get_organism(self):
         return self.organism
