@@ -1,44 +1,39 @@
+from dataclasses import dataclass
+possible_cells = ['organism', 'plant', 'wall', 'empty']
+@dataclass
+class Cell:
+    """
+    A cell in the environment.
+    """
+    x: int
+    y: int
+    cell_type: str = "empty"
+    light: int = 10
+    organism: 'Organism' = None
 
-from numpy import random
+    def __str__(self):
+        return f"({self.x}, {self.y}) - {self.cell_type}"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.cell_type == other.cell_type and self.organism == other.organism
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def get_pos(self):
+        return self.x, self.y
+
+    def get_type(self):
+        return self.cell_type
+
+    def get_light(self):
+        return self.light
+
+    def get_organism(self):
+        return self.organism
+    
 
 
-class Authomaton():
-    def __init__(self, x, y, genome = None) -> None:
-        self.x, self.y = x, y # position of the animal on the map
-        self.genome = genome if genome != None else bin(random.randint(0, 31))[2:] # currently is a bit number
-        self.genome = "0" * (5 - len(self.genome)) + self.genome
-        self.stance = None # stance of the authomaton
-        self.age = 0
-
-    def new_generation(self, another_genome : int):
-        """
-        Creates the new generation of this cell mated with another cell.
-        """
-        # --Це кнш якщо ми будемо враховувати ще якийсь принцип зміни геному крім мутацій.
-        output = ""
-        for i in range(len(self.genome)):
-            output += self.genome[i] if random.randint(0,100) > 50 else another_genome[i]
-        return Authomaton(self.x, self.y, output)
-
-    def mutate(self):
-        to_replace = random.randint(0, len(self.genome)-1)
-        new_gene = "0" if self.genome[to_replace] == "1" else "1"
-        self.genome = self.genome[:to_replace] + new_gene + self.genome[to_replace + 1:]
-
-    def act(self, stance_to_change):
-        """
-        Authomathon itself. Manages the stances which define the behaviour of the cell.
-        """
-        self.stance = stance_to_change
-        if self.stance == "":
-            pass #do a thing e.g mutate, mate, die, migrate.
-        elif self.stance == "":
-            pass #do a thing e.g mutate, mate, die, migrate.
-
-    def __str__(self) -> str:
-        return f"{self.genome} : {self.x}, {self.y}"
-
-auth = Authomaton(0, 0)
-print(auth)
-auth.mutate()
-print(auth)
+if __name__ == "__main__":
+    cell = Cell(1, 2, "wall", 10)
+    print(cell)
