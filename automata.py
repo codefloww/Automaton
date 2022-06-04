@@ -46,11 +46,20 @@ class Automata:
                     if abs(i) + abs(j) <= strength and self.x + i >= 0 and self.y + j >= 0:
                         possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
                              self.env.get_cell(self.x+i, self.y+j).organism == None else 1
-            # визначає найкращі за векторним добутком
+            # визначає найкращі за векторним добутком координати і повертає їх у формі ("x", "y")
             ranges = []
             for i in danger_cells:
                 ranges.append([(cell, round(sqrt(abs(cell.x - i.x) + abs(cell.y - i.y)))) for cell in possible_moves])
-            return # тут насправді має бути вибір найпідходящішої позиції з ліста ranges, який містить варіанти втечі
+            possible_move_dict = {}
+            for i in ranges:
+                for j in i:
+                    if f"{j[0].x} {j[0].y}" not in possible_move_dict:
+                        possible_move_dict[f"{j[0].x} {j[0].y}"] = []
+                    possible_move_dict[f"{j[0].x} {j[0].y}"].append(j[1])
+            return max(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
+
+        def move_towards(x, y):
+            pass
 
         def look_for_danger():
             return [x for x in surr if x.organism != None]
@@ -64,9 +73,9 @@ class Automata:
 
         # починаю прописувати логіку рішень
         if len(pray_cells) > 0:
-            escape(pray_cells) #move_towards
+            self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" ")) #move_towards
         elif len(danger_cells) > 0:
-            escape()
+            escape(danger_cells)
         elif len(food_cells) > 0:
             move_towards()
         else :
