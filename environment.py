@@ -5,7 +5,9 @@ class Environment:
     """
     An environment.
     """
+
     def __init__(self, width, height, cell_type=None):
+
         """
         Initialize the environment.
         """
@@ -13,6 +15,7 @@ class Environment:
         self.height = height
         self.size = width * height
         self.grid = [[Cell(x, y, cell_type) for y in range(height)] for x in range(width)]
+
 
     def __str__(self):
         """
@@ -63,6 +66,18 @@ class Environment:
         Return the cell at the specified coordinates.
         """
         return self.grid[x][y]
+
+    def get_cells_pos(self, cell_type=None):
+        """
+        Return the positions of all cells of the specified type.
+        """
+        cell_type = cell_type or "empty"
+        cell_positions = []
+        for row in self.grid:
+            for cell in row:
+                if cell.get_type() == cell_type:
+                    cell_positions.append(cell.get_pos())
+        return cell_positions
 
     def set_cell(self, x, y, cell):
         """

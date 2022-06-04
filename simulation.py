@@ -2,8 +2,10 @@ from visual import GUI
 
 
 class Simulation:
-    def __init__(self):
-        self.gui = GUI()
+
+    def __init__(self, env=None):
+        self.env = env or Environment(40, 30)
+        self.gui = GUI(self.env)
         self.generation = 0
 
     def run(self):
@@ -16,10 +18,9 @@ class Simulation:
         print(self.gui.environment)
         for i in range(100):
             print(i)
-        
+
 
 if __name__ == "__main__":
     sim = Simulation()
     sim.run()
     # try to be able to set some cells in environment via GUI
-
