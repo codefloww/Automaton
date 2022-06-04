@@ -1,6 +1,11 @@
-import random, pygame, time, datetime
+import datetime
+import pygame
+import random
+import time
+
 from cell import Cell
 from environment import Environment
+
 possible_cells = ['organism', 'plant', 'wall', 'empty']
 
 # color palette
@@ -40,7 +45,7 @@ class Plant(Cell):
 
 class Wall(Cell):
     color = (51, 53, 53)
-    size = (40, 40)
+    size = (11, 11)
 
     def __init__(self, x, y):
         super().__init__(x, y, possible_cells[2])
@@ -114,7 +119,6 @@ class GUI:
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
     def __init__(self):
-        self.environment = Environment(GUI.DISPLAY_X - GUI.MENU_SIZE, GUI.DISPLAY_Y)
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -133,10 +137,8 @@ class GUI:
         self.button = None
         self.cur_spawning_button = None
 
-        # self.cells = []
-        # self.plants = []
-        # self.walls = []
-
+        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
+        self.coeff = 12
         self.not_available_field = []
         self.light = False
 
@@ -148,18 +150,17 @@ class GUI:
 
                 if name_class == 'Cell':
                     if self.available_coordinates(x, y, Organism.radius):
-                        # self.cells.append(Organism(x, y))
-                        self.environment.grid[x][y] = Organism(x, y)
+                        self.environment.set_cell(x // self.coeff, y // self.coeff, Organism(x, y))
                 elif name_class == 'Plant':
                     if self.available_coordinates(x, y, Plant.radius):
-                        # self.plants.append(Plant(x, y))
-                        self.environment.grid[x][y] = Plant(x, y)
+                        self.environment.set_cell(x // self.coeff, y // self.coeff, Plant(x, y))
                 elif name_class == 'Wall':
-                    if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
-                        # self.walls.append(Wall(x, y))
-                        self.environment.grid[x][y] = Wall(x, y)
-                        self.not_available_field.append(
-                            [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
+                    for i in range(-1, 2):
+                        x_c = (x // self.coeff) * self.coeff + self.coeff*i
+                        for j in range(-1, 2):
+                            y_c = (y // self.coeff) * self.coeff + self.coeff*j
+                            if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
+                                self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
 
     def button_navigate(self, button):
         self.button = button
@@ -181,13 +182,10 @@ class GUI:
         self.light = not self.light
 
     def available_coordinates(self, x, y, radius):
-        x_coordinate = set(range(x - radius, x + radius + 1))
-        y_coordinate = set(range(y - radius, y + radius + 1))
         if x >= GUI.DISPLAY_X-GUI.MENU_SIZE or y >= GUI.DISPLAY_Y:
             return False
-        for wall in self.not_available_field:
-            if set(wall[0]) & x_coordinate and set(wall[1]) & y_coordinate:
-                return False
+        if self.environment.grid[x//self.coeff][y//self.coeff].cell_type == 'wall':
+            return False
         return True
 
     def main(self):
@@ -195,8 +193,6 @@ class GUI:
         run = True
         while run:
             GUI.SCREEN.fill(self.display_color)
-            # for obj in [*self.cells, *self.plants, *self.walls]:
-            #     obj.draw()
             for width in self.environment.grid:
                 for cell in width:
                     if cell.cell_type is not None:
@@ -209,7 +205,6 @@ class GUI:
             if self.light_button.draw(GUI.SCREEN):
                 self.light_button.turn_on()
                 self.change_light()
-                print("Turn the light on")
 
             # Cell button
             self.button_navigate(self.cell_button)
