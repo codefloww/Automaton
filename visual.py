@@ -1,3 +1,4 @@
+
 import datetime
 import pygame
 import random
@@ -17,8 +18,8 @@ RED = (247, 129, 134)
 FPS = 60
 clock = pygame.time.Clock()
 
-
 class Organism(Cell):
+
     radius = 10
 
     def __init__(self, x, y):
@@ -31,6 +32,7 @@ class Organism(Cell):
                            (self.x, self.y), Organism.radius)
 
 
+
 class Plant(Cell):
     color = (110, 212, 123)
     radius = 7
@@ -41,6 +43,7 @@ class Plant(Cell):
     def draw(self):
         pygame.draw.circle(GUI.SCREEN, Plant.color,
                            (self.x, self.y), Plant.radius, 4)
+
 
 
 class Wall(Cell):
@@ -118,27 +121,39 @@ class GUI:
     TEXT_COLOR = (10, 20, 10)
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-    def __init__(self):
+    def __init__(self, env):
         pygame.init()
-        pygame.display.set_caption('Evolution Game')
-        pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
+        pygame.display.set_caption("Evolution Game")
+        pygame.display.set_icon(
+            pygame.image.load("images/evolution.png")
+        )  # program image
         pygame.font.init()
         self.font = pygame.font.SysFont(GUI.TEXT_FONT, GUI.TEXT_SIZE)
+
         self.display_color = GUI.DISPLAY_COLOR_NIGHT
         self.menu_color = GUI.MENU_COLOR_NIGHT
 
         # load button images
         self.light_button = Button(940, 80, "images/idea.png", "images/idea_on.png")
-        self.cell_button = Button(940, 180, "images/virus.png", "images/virus_on.png", "Cell")
-        self.wall_button = Button(940, 280, "images/wall.png", "images/wall_on.png", "Wall")
-        self.plant_button = Button(940, 380, "images/plant.png", "images/plant_on.png", "Plant")
-        self.play_button = Button(940, 480, "images/play-button.png", "images/video-pause-button.png")
+        self.cell_button = Button(
+            940, 180, "images/virus.png", "images/virus_on.png", "Cell"
+        )
+        self.wall_button = Button(
+            940, 280, "images/wall.png", "images/wall_on.png", "Wall"
+        )
+        self.plant_button = Button(
+            940, 380, "images/plant.png", "images/plant_on.png", "Plant"
+        )
+        self.play_button = Button(
+            940, 480, "images/play-button.png", "images/video-pause-button.png"
+        )
         self.quit_button = Button(940, 580, "images/remove.png")
         self.button = None
         self.cur_spawning_button = None
 
-        self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
+        self.environment = env or Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // 7 + 1, GUI.DISPLAY_Y // 7 + 1)
         self.coeff = 12
+
         self.not_available_field = []
         self.light = False
 
@@ -162,6 +177,7 @@ class GUI:
                             if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                                 self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
 
+
     def button_navigate(self, button):
         self.button = button
         if self.button.is_on and self.button.draw(GUI.SCREEN):
@@ -175,10 +191,16 @@ class GUI:
             self.spawn_cell(self.button.created_object)
 
     def change_light(self):
-        self.display_color = GUI.DISPLAY_COLOR_DAY \
-            if self.display_color == GUI.DISPLAY_COLOR_NIGHT else GUI.DISPLAY_COLOR_NIGHT
-        self.menu_color = GUI.MENU_COLOR_DAY \
-            if self.menu_color == GUI.MENU_COLOR_NIGHT else GUI.MENU_COLOR_NIGHT
+        self.display_color = (
+            GUI.DISPLAY_COLOR_DAY
+            if self.display_color == GUI.DISPLAY_COLOR_NIGHT
+            else GUI.DISPLAY_COLOR_NIGHT
+        )
+        self.menu_color = (
+            GUI.MENU_COLOR_DAY
+            if self.menu_color == GUI.MENU_COLOR_NIGHT
+            else GUI.MENU_COLOR_NIGHT
+        )
         self.light = not self.light
 
     def available_coordinates(self, x, y, radius):
@@ -200,6 +222,7 @@ class GUI:
             pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
 
             if self.light_button.is_on and self.light_button.draw(GUI.SCREEN):
+
                 self.light_button.turn_off()
                 self.change_light()
             if self.light_button.draw(GUI.SCREEN):
@@ -221,7 +244,7 @@ class GUI:
             if self.play_button.draw(GUI.SCREEN):
                 self.play_button.turn_on()
                 print("Evolution starts")
-            
+
             # Quit button
             if self.quit_button.draw(GUI.SCREEN):
                 run = False
@@ -237,9 +260,14 @@ class GUI:
                 self.font.render(f'Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}', False,
                                  GUI.TEXT_COLOR), (10, 10 + GUI.TEXT_SIZE))
 
+
             pygame.display.update()
 
 
-if __name__ == '__main__':
-    display = GUI()
+
+if __name__ == "__main__":
+    import environment
+
+    env = environment.Environment(40, 30)
+    display = GUI(env)
     display.main()
