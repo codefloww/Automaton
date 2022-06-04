@@ -210,7 +210,6 @@ class GUI:
             if self.light_button.draw(self.screen):
                 self.light_button.turn_on()
                 self.change_light()
-                print("Turn the light on")
 
             # Cell button
             self.button_navigate(self.cell_button)
