@@ -1,9 +1,11 @@
 from cell import Cell
+
+
 class Environment:
     """
     An environment.
     """
-    def __init__(self, width, height, cell_type = None, lighting = None):
+    def __init__(self, width, height, cell_type=None, lighting=None):
         """
         Initialize the environment.
         """
@@ -79,6 +81,7 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
+
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
