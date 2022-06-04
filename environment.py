@@ -5,14 +5,14 @@ class Environment:
     """
     An environment.
     """
-    def __init__(self, width, height, cell_type=None, lighting=None):
+    def __init__(self, width, height, cell_type=None):
         """
         Initialize the environment.
         """
         self.width = width
         self.height = height
         self.size = width * height
-        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
+        self.grid = [[Cell(x, y, cell_type) for y in range(height)] for x in range(width)]
 
     def __str__(self):
         """
@@ -81,6 +81,13 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
+
+    def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height-y)/self.height
 
 
 if __name__ == "__main__":
