@@ -98,6 +98,14 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
 
+    def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height-y)/self.height
+
+
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
