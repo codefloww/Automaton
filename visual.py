@@ -141,37 +141,44 @@ class GUI:
         self.coeff = 17
         self.environment = Environment((GUI.DISPLAY_X - GUI.MENU_SIZE) // self.coeff + 1, GUI.DISPLAY_Y // self.coeff + 1)
 
-        self.not_available_field = []
+        self.queue_cell = []
         self.light = False
         self.erase = False
         self.run = True
 
     def spawn_cell(self, name_class):
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z or event.key == pygame.KMOD_CTRL and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+                    delete = True
+                    while delete:
+                        if self.queue_cell:
+                            for x, y in self.queue_cell.pop():
+                                if self.environment.get_cell(x, y).cell_type is not None:
+                                    self.environment.set_cell(x, y, Cell(x, y))
+                                    delete = False
+                        else:
+                            delete = False
+
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-
                 x, y = pygame.mouse.get_pos()
-
                 if self.erase:
                     if x < GUI.DISPLAY_X-GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                             self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type is not None:
                         self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y))
                 elif name_class == 'Cell':
-                    print('cell')
                     x = (x // self.coeff) * self.coeff + self.coeff//2
                     y = (y // self.coeff) * self.coeff + self.coeff//2
-                    if self.available_coordinates(x, y, Organism.radius):
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Organism(x, y))
+                    self.add_cell(x, y, Organism(x, y))
                 elif name_class == 'Plant':
-                    if self.available_coordinates(x, y, Plant.radius):
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Plant(x, y))
+                    self.add_cell(x, y, Plant(x, y))
                 elif name_class == 'Wall':
                     for i in range(-1, 1):
                         x_c = (x // self.coeff) * self.coeff + self.coeff*i
                         for j in range(-1, 1):
                             y_c = (y // self.coeff) * self.coeff + self.coeff*j
-                            if x_c <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
-                                self.environment.set_cell(x_c // self.coeff, y_c // self.coeff, Wall(x_c, y_c))
+                            self.add_cell(x_c, y_c, Wall(x_c, y_c), (16, i, j))
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
 
@@ -194,11 +201,19 @@ class GUI:
             if self.menu_color == GUI.MENU_COLOR_NIGHT else GUI.MENU_COLOR_NIGHT
         self.light = not self.light
 
-    def available_coordinates(self, x, y, radius):
-        if x >= GUI.DISPLAY_X-GUI.MENU_SIZE or y >= GUI.DISPLAY_Y:
+    def add_cell(self, x, y, cell, size=[0]):
+        if x >= GUI.DISPLAY_X-GUI.MENU_SIZE-size[0] or y >= GUI.DISPLAY_Y:
             return False
+        if cell.cell_type == 'wall':
+            self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+            if size[1] == -1 and size[2] == -1:
+                self.queue_cell.append([(x // self.coeff, y // self.coeff)])
+            else:
+                self.queue_cell[-1].append((x // self.coeff, y // self.coeff))
         if self.environment.grid[x//self.coeff][y//self.coeff].cell_type == 'wall':
             return False
+        self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+        self.queue_cell.append([(x // self.coeff, y // self.coeff)])
         return True
 
     def main(self):
@@ -241,7 +256,6 @@ class GUI:
             if self.erase_button.draw(GUI.SCREEN):
                 self.erase = True
                 self.erase_button.turn_on()
-                print("Erase")
 
             # Quit button
             if self.quit_button.draw(GUI.SCREEN):
@@ -249,7 +263,7 @@ class GUI:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
-                    self.run= False
+                    self.run = False
 
             clock.tick(FPS)
 
