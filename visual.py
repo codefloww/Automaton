@@ -98,7 +98,7 @@ class Button:
         return action
 
 
-class GUI(Environment):
+class GUI:
     DISPLAY_X = 1000
     DISPLAY_Y = 700
     DISPLAY_COLOR_NIGHT = (70, 80, 80)
@@ -114,7 +114,7 @@ class GUI(Environment):
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
     def __init__(self):
-        super().__init__(GUI.DISPLAY_X - GUI.MENU_SIZE, GUI.DISPLAY_Y)
+        self.environment = Environment(GUI.DISPLAY_X - GUI.MENU_SIZE, GUI.DISPLAY_Y)
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -149,15 +149,15 @@ class GUI(Environment):
                 if name_class == 'Cell':
                     if self.available_coordinates(x, y, Organism.radius):
                         # self.cells.append(Organism(x, y))
-                        self.grid[x][y] = Organism(x, y)
+                        self.environment.grid[x][y] = Organism(x, y)
                 elif name_class == 'Plant':
                     if self.available_coordinates(x, y, Plant.radius):
                         # self.plants.append(Plant(x, y))
-                        self.grid[x][y] = Plant(x, y)
+                        self.environment.grid[x][y] = Plant(x, y)
                 elif name_class == 'Wall':
                     if x <= GUI.DISPLAY_X - GUI.MENU_SIZE - Wall.size[0]:
                         # self.walls.append(Wall(x, y))
-                        self.grid[x][y] = Wall(x, y)
+                        self.environment.grid[x][y] = Wall(x, y)
                         self.not_available_field.append(
                             [range(x, x + Wall.size[0] + 1), range(y, y + Wall.size[1] + 1)])
 
@@ -197,7 +197,7 @@ class GUI(Environment):
             GUI.SCREEN.fill(self.display_color)
             # for obj in [*self.cells, *self.plants, *self.walls]:
             #     obj.draw()
-            for width in self.grid:
+            for width in self.environment.grid:
                 for cell in width:
                     if cell.cell_type is not None:
                         cell.draw()
