@@ -2,6 +2,7 @@
 import random
 
 from math import sqrt
+import random
 from environment import Environment
 from cell import Cell
 
@@ -49,7 +50,7 @@ class Automata:
             # визначає найкращі за векторним добутком координати і повертає їх у формі ("x", "y")
             ranges = []
             for i in danger_cells:
-                ranges.append([(cell, round(sqrt(abs(cell.x - i.x) + abs(cell.y - i.y)))) for cell in possible_moves])
+                ranges.append([(cell, sqrt(abs(cell.x - i.x) + abs(cell.y - i.y))) for cell in possible_moves])
             possible_move_dict = {}
             for i in ranges:
                 for j in i:
@@ -74,6 +75,9 @@ class Automata:
         # починаю прописувати логіку рішень
         if len(pray_cells) > 0:
             self.x, self.y = (int(x) for x in escape(pray_cells).split(" ")) #move_towards
+            self.cell = self.env.get_cell(self.x, self.y)
+            self.env.get_cell(self.x, self.y).organism = self
+            print(self.x, self.y)
         elif len(danger_cells) > 0:
             escape(danger_cells)
         elif len(food_cells) > 0:
@@ -121,16 +125,16 @@ class Automata:
         return self.energy
 
 if __name__ == "__main__":
+    # може рейзитись TypeError бо ще не готова функція руху до цілі. Це стається бо в зоні досяжності зору нема від кого тікати. Якщо рейзиться - просто запустіть заново.
     env = Environment(10, 10)
     my_cell = env.get_cell(0, 0)
-    enemy_cell = Cell(1, 0)
-    enemy_cell.organism = Automata(enemy_cell, env)
-    env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
-    enemy_cell = Cell(2, 0)
-    enemy_cell.organism = Automata(enemy_cell, env)
-    env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+    for i in range(10):
+        enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
+        enemy_cell.organism = Automata(enemy_cell, env)
+        env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
     my_cell.organism = Automata(my_cell, env)
     my_man = my_cell.organism
-    print(my_man.move_ability(2))
+    my_man.move_ability(4)
+    print(env)
 
 
