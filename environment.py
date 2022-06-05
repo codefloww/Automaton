@@ -93,7 +93,7 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
         return states
-        def lighting(self, y):
+    def lighting(self, y):
         """
         Return coefficient of external illumination
         0 <= coefficient <= 1
