@@ -20,6 +20,7 @@ class Environment:
             for x in range(width)
         ]
         self.killed_before = []
+        self.new_cells = []
 
     def __str__(self):
         """

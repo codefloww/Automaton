@@ -130,7 +130,8 @@ class Automata:
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
             random.choice(to_eat).cell_type = "empty"
-            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
+            self.energy += strength*5
+            self.produce_ability(self._abilities_decider()[self.produce_ability])
         else :
             raise Exception("No food around but eat_ability() casted.")
 
@@ -144,7 +145,7 @@ class Automata:
         if strength == 0 or self.energy < 10:
             return
         else:
-            if self.see_ability > 0:
+            if self._abilities_decider()[self.see_ability] > 0:
                 nearest_cells = self.env.get_neighbors(self.x, self.y, 1)
             else:
                 nearest_cells = []
@@ -160,17 +161,34 @@ class Automata:
                         kill_probability = -1
                     if kill_probability == 1:
                         self.env.killed_before.append(cell)
-                        self.energy += 20 if self.energy <= 30 else 50-self.energy
+                        self.energy += 20
+                        self.produce_ability(self._abilities_decider()[self.produce_ability])
                     if kill_probability != -1:
                         break
             else:
                 return
 
     def photosynth_ability(self, strength) -> None:
-        self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
+        self.energy += floor(strength*1.5)
+        self.produce_ability(self._abilities_decider()[self.produce_ability])
 
     def produce_ability(self, strength) -> None:
-        pass
+        diff_energy = self.energy - 50
+        if diff_energy <= 5:
+            return
+        if strength <= 1:
+            number_of_plants = diff_energy // 10
+        else:
+            number_of_plants = diff_energy // 5
+        nearest_cells = self.env.get_neighbors(self.x, self.y)
+        for cell in nearest_cells:
+            if number_of_plants > 0:
+                if cell.cell_type == "empty":
+                    self.env.grid[cell.x][cell.y](Cell(cell.x, cell.y, "plant"))
+                    number_of_plants -= 1
+            else:
+                break
+        self.energy = 50
 
     def hybernate_ability(self, strength) -> None:
         if random.randint(0, 100) > strength*10 :
