@@ -2,7 +2,7 @@
 from math import sqrt
 import random
 from environment import Environment
-from cell import Cell
+
 
 
 class Automata:
@@ -181,6 +181,7 @@ class Automata:
 
 if __name__ == "__main__":
     # може рейзитись TypeError бо ще не готова функція руху до цілі. Це стається бо в зоні досяжності зору нема від кого тікати. Якщо рейзиться - просто запустіть заново.
+    from cell import Cell
     env = Environment(10, 10)
     my_cell = env.get_cell(0, 0)
     for i in range(10):

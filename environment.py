@@ -70,6 +70,14 @@ class Environment:
         """
         return self.grid[x][y]
 
+    def get_organisms(self):
+        organisms = set()
+        for row in self.grid:
+            for cell in row:
+                if cell.get_type() == "organism":
+                    organisms.add(cell.organism)
+        return organisms
+
     def get_cells_pos(self, cell_type="empty"):
         """
         Return the positions of all cells of the specified type.
