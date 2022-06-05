@@ -31,6 +31,9 @@ class Cell:
     def __hash__(self):
         return hash((self.x, self.y))
 
+    def set_organism(self, automata):
+        self.organism = automata
+
     def get_pos(self):
         return self.x, self.y
 
