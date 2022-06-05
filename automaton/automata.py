@@ -265,9 +265,5 @@ class Automata:
 
     def get_genome(self) -> list:
         return self.genome
-    def get_health(self) -> int:
-        return self.health
-    def get_age(self) -> int:
-        return self.age
     def get_energy(self) -> int:
         return self.energy
