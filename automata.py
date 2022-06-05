@@ -1,17 +1,15 @@
 """module for discrete evolving automata"""
-from multiprocessing.sharedctypes import Value
 import random
 
 from math import sqrt, floor
 import random
-from shutil import move
 from environment import Environment
 from cell import Cell
 
 class Automata:
     def __init__(self, cell, env) -> None:
         self.GENOME_SIZE = 8
-        self.genome = "".join([random.choice(["0", "1"]) for x in range(2*self.GENOME_SIZE)])
+        self.genome = "1" * (2 * self.GENOME_SIZE)#"".join([random.choice(["0", "1"]) for x in range(2*self.GENOME_SIZE)])
         self.age = 0
         self.energy = 4
         self.cell = cell
@@ -31,17 +29,14 @@ class Automata:
         abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
 
-    def _behavior_decider(self)->None:
+    def _behavior_decider(self) -> None:
         abilities = self._abilities_decider()
-        surr = self.see_ability(1)
-        if self.energy < 1 :
-            self.hybernate_ability(abilities[self.hybernate_ability])
-        elif len([x for x in surr if x.organism != None]) > 0:
-            self.move_ability(abilities[self.move_ability])
-        if len([x for x in surr if x.organism != None]) > 0:
-            self.kill_ability(abilities[self.kill_ability])
-        elif len([x for x in surr if x.cell_type == "plant"]) > 0 :
-            self.eat_ability(abilities[self.eat_ability])
+        completed_action = False
+        for ability in abilities:
+            if abilities[ability] > 0:
+                completed_action = ability(abilities[ability])
+            if completed_action == True:
+                break
 
     def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
@@ -132,7 +127,6 @@ class Automata:
         except AttributeError:
             pass # немає куди тікати
 
-
     def see_ability(self, strength) -> None:
         return self.env.get_neighbors(self.x, self.y, strength)
 
@@ -142,8 +136,9 @@ class Automata:
         if len(to_eat) > 0:
             random.choice(to_eat).cell_type = "empty"
             self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
+            return True
         else :
-            raise Exception("No food around but eat_ability() casted.")
+            return False
 
     def reproduce_ability(self, strength) -> None:
         pass
@@ -153,7 +148,7 @@ class Automata:
         can kill if other.kill_ability < strength
         """
         if strength == 0 or self.energy < 10:
-            return
+            return False
         else:
             if self._abilities_decider()[self.see_ability] > 0:
                 nearest_cells = self.env.get_neighbors(self.x, self.y, 1)
@@ -173,22 +168,26 @@ class Automata:
                     if kill_probability == 1:
                         self.env.killed_before.append(enemy)
                         self.energy += 20 if self.energy <= 30 else 50-self.energy
+                        enemy.cell.organism = None
+                        return True
                     if kill_probability != -1:
                         break
             else:
-                return
+                return False
 
     def photosynth_ability(self, strength) -> None:
         self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
+        return True
 
     def produce_ability(self, strength) -> None:
         pass
 
     def hybernate_ability(self, strength) -> None:
         if random.randint(0, 100) > strength*10 :
-            self.photosynth_ability(self._abilities_decider()[self.photosynth_ability])
+            return self.photosynth_ability(self._abilities_decider()[self.photosynth_ability])
         else:
             self.energy += strength if self.energy + strength <= 50 else 50 - self.energy
+            return True
 
     def mutate(self) -> None:
         mutation_position = random.randint(0, self.GENOME_SIZE)
@@ -218,7 +217,7 @@ if __name__ == "__main__":
     my_cell = env.get_cell(0, 0)
     authomatas = []
 
-    for i in range(random.randint(10, 20)):
+    for i in range(50):
         _cell = Cell(random.randint(0, 8), random.randint(0, 8))
         _cell.organism = Automata(_cell, env)
         env.set_cell(_cell.x, _cell.y, _cell)
@@ -230,5 +229,6 @@ if __name__ == "__main__":
         for j in authomatas:
             j.make_move()
         print(env)
+        print()
     print(env.killed_before)
 
