@@ -1,32 +1,32 @@
-from visual import GUI
 from environment import Environment
-
+from cell import Cell
+from visual import GUI
 
 class Simulation:
-    def __init__(self, env=None):
-        # 55, 42
-        self.env = env or Environment(55, 42)
-        self.gui = GUI(self.env)
-        self.generations = 1000
-        self.steps = 300
+    def __init__(self, env = None):
+        self.env = env or Environment(10, 10)
+        self.gui = GUI()
+        self.generation = 0
 
     def run(self):
-        # # the first stage of gui in which we interact with the interface and setup env
-        # self.gui.setup()
-        # # the second stage of gui in which we run evolution(should start after pressing play in previous function)
-        # self.run_simulation()
 
-        self.gui.main(self.generations, self.steps)
+        self.gui.main()
+        # self.env.set_cell(i, 5, Cell(i, 5, 'organism')) for setting the cell
+        # here we need something to refresh the GUI
+        # like self.gui.refresh(self.env) or self.gui.update(self.env)
+        
 
-    # def run_simulation(self):
-    #     # we have 1000 generations
-    #     for gen in range(1000):
-    #         for step in range(300):
-    #             self.run_step()
-    #             self.gui.run() # updates gui
+    def run_simulation(self):
+        print(self.env)
+        for i in range(100):
+            print(i)
+        
 
 
 if __name__ == "__main__":
-    sim = Simulation()
+    env = Environment(50, 50)
+    my_cell = env.get_cell(0, 0)
+    sim = Simulation(env)
     sim.run()
     # try to be able to set some cells in environment via GUI
+
