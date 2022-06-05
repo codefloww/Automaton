@@ -2,9 +2,6 @@
 
 from math import sqrt, floor
 import random
-# import matplotlib.pyplot as plt
-
-from environment import Environment
 from cell import Cell
 
 class Automata:
@@ -104,7 +101,6 @@ class Automata:
 
 # Логіка - у пріоритеті напад на когось. Відразу ж за нападом йде втеча від небезпечного автоматона (напад на слабкого все одно вважається пріоритетом).
 # Не бачимо ворогів узагалі? Йдемо до їжі. Якщо ж навколо узагалі нічого немає - мігруємо у випадковому напрямку на випадкову відстань.
-# По факту - логіка агресора, але можна легко поміняти і взагалі ввести типи клітин по агресивності.
         try :
             if len(pray_cells) > 0:
                 self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
@@ -279,33 +275,3 @@ class Automata:
         return self.age
     def get_energy(self) -> int:
         return self.energy
-
-if __name__ == "__main__":
-    # Змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
-    env = Environment(50, 50)
-    my_cell = env.get_cell(0, 0)
-    authomatas = []
-    autho_amount = []
-    for i in range(500):
-        _cell = Cell(random.randint(0, 49), random.randint(0, 49))
-        _cell.organism = Automata(_cell, env)
-        env.set_cell(_cell.x, _cell.y, _cell)
-        authomatas.append(_cell.organism)
-    for i in range(1) :
-        env.get_cell(random.randint(0, 49) ,random.randint(0, 49)).cell_type = "plant"
-    print(env)
-    for i in range(500):
-        for j in authomatas:
-            j.make_move()
-        print(env)
-        print()
-        autho_amount.append(env.get_authomaton_number())
-    
-    # plt.plot(list(range(500)), autho_amount)
-    
-    # plt.xlabel('Iterations')
-    # plt.ylabel('Authomatons count on the map')
-    
-    
-    # plt.show()
-
