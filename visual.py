@@ -24,8 +24,7 @@ class Organism(Cell):
 
     def __init__(self, x, y, light, organism=None):
         colors = [YELLOW, RED, PURPLE]
-        super().__init__(x, y, light, possible_cells[0])
-        self.organism = organism
+        super().__init__(x, y,  possible_cells[0], light, organism)
         self.color = random.choice(colors)
 
     def draw(self):
@@ -37,7 +36,7 @@ class Plant(Cell):
     radius = 7
 
     def __init__(self, x, y, light):
-        super().__init__(x, y, light, possible_cells[1])
+        super().__init__(x, y, possible_cells[1], light)
 
     def draw(self):
         pygame.draw.circle(GUI.SCREEN, Plant.color, (self.x, self.y), Plant.radius, 4)
@@ -48,7 +47,7 @@ class Wall(Cell):
     size = (16, 16)
 
     def __init__(self, x, y, light):
-        super().__init__(x, y, light, possible_cells[2])
+        super().__init__(x, y,  possible_cells[2], light)
 
     def draw(self):
         pygame.draw.rect(
@@ -345,6 +344,7 @@ class GUI:
                     self.run = False
 
             clock.tick(FPS)
+            print(self.environment.get_cells_pos('plant'))
 
             GUI.SCREEN.blit(
                 self.font.render("Generation X", False, (10, 20, 10)), (10, 10)
