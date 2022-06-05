@@ -26,8 +26,8 @@ class Automata:
             self.move_ability,
             self.eat_ability,
             self.kill_ability,
-            self.hybernate_ability,
             self.photosynth_ability,
+            self.hybernate_ability,
             self.reproduce_ability,
             self.produce_ability,
         ]
