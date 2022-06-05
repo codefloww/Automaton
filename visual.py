@@ -14,7 +14,7 @@ YELLOW = (245, 236, 142)
 GREEN = (110, 212, 123)
 PURPLE = (150, 110, 212)
 RED = (247, 129, 134)
-COEFF = 17
+COEFF = 18
 FPS = 60
 clock = pygame.time.Clock()
 
@@ -28,8 +28,10 @@ class Organism(Cell):
         self.color = random.choice(colors)
 
     def draw(self):
+        x = self.x * COEFF + COEFF // 2
+        y = self.y * COEFF + COEFF // 2
         pygame.draw.circle(GUI.SCREEN, self.color,
-                           (self.x, self.y), Organism.radius)
+                           (x, y), Organism.radius)
 
 
 class Plant(Cell):
@@ -40,8 +42,10 @@ class Plant(Cell):
         super().__init__(x, y, possible_cells[1], light)
 
     def draw(self):
+        x = self.x * COEFF + COEFF // 2
+        y = self.y * COEFF + COEFF // 2
         pygame.draw.circle(GUI.SCREEN, Plant.color,
-                           (self.x, self.y), Plant.radius, 4)
+                           (x, y), Plant.radius, 4)
 
 
 class Wall(Cell):
@@ -52,8 +56,10 @@ class Wall(Cell):
         super().__init__(x, y, possible_cells[2], light)
 
     def draw(self):
+        x = self.x * COEFF + COEFF // 2
+        y = self.y * COEFF + COEFF // 2
         pygame.draw.rect(GUI.SCREEN, Wall.color,
-                         (self.x, self.y, Wall.size[0], Wall.size[1]))
+                         (x, y, Wall.size[0], Wall.size[1]))
 
 
 class Button:
@@ -143,6 +149,7 @@ class GUI:
         self.cur_spawning_button = None
 
         self.coeff = GUI.DISPLAY_X // environment.width
+        print(self.coeff)
         self.environment = environment
         self.queue_cell = []
         self.erase = False
@@ -167,22 +174,21 @@ class GUI:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
+                x, y = x // self.coeff, y // self.coeff
 
                 if self.erase:
                     if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
-                            self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type != 'empty':
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y, 'empty', self.environment.light))
+                            self.environment.get_cell(x, y).cell_type != 'empty':
+                        self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
                 elif name_class == 'Cell':
-                    x = (x // self.coeff) * self.coeff + self.coeff // 2
-                    y = (y // self.coeff) * self.coeff + self.coeff // 2
                     self.add_cell(x, y, Organism(x, y, self.environment.light))
                 elif name_class == 'Plant':
                     self.add_cell(x, y, Plant(x, y, self.environment.light))
                 elif name_class == 'Wall':
                     for i in range(-1, 1):
-                        x_c = (x // self.coeff) * self.coeff + self.coeff * i
+                        x_c = x + i
                         for j in range(-1, 1):
-                            y_c = (y // self.coeff) * self.coeff + self.coeff * j
+                            y_c = y + j
                             self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), [16, i, j])
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
@@ -220,16 +226,16 @@ class GUI:
         add cells to the grid and queue if coordinates is correct;
         """
         if cell.cell_type == 'wall':
-            if x < GUI.DISPLAY_X - GUI.MENU_SIZE - size[0] or y <= GUI.DISPLAY_Y:
-                self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
+            if x*self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE - size[0] or y*self.coeff <= GUI.DISPLAY_Y:
+                self.environment.set_cell(x, y, cell)
                 if size[1] == -1 and size[2] == -1:
-                    self.queue_cell.append([(x // self.coeff, y // self.coeff)])
+                    self.queue_cell.append([(x, y)])
                 else:
-                    self.queue_cell[-1].append((x // self.coeff, y // self.coeff))
+                    self.queue_cell[-1].append((x, y))
         else:
-            if x < GUI.DISPLAY_X - GUI.MENU_SIZE or y < GUI.DISPLAY_Y:
-                self.environment.set_cell(x // self.coeff, y // self.coeff, cell)
-                self.queue_cell.append([(x // self.coeff, y // self.coeff)])
+            if x*self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE or y*self.coeff < GUI.DISPLAY_Y:
+                self.environment.set_cell(x, y, cell)
+                self.queue_cell.append([(x, y)])
                 return True
         return False
 
