@@ -1,5 +1,7 @@
 from cell import Cell
 from automata import Automata
+
+
 class Environment:
     """
     An environment.
@@ -11,6 +13,7 @@ class Environment:
         self.width = width
         self.height = height
         self.size = width * height
+        self.light = False
         self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
         self.killed_before = []
 
@@ -57,7 +60,6 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 yield cell
-
 
     def get_cell(self, x, y):
         """
@@ -139,6 +141,8 @@ class Environment:
         for width in self.grid:
             for item in width:
                 item.light = boolean
+
+
 if __name__ == "__main__":
     env = Environment(10, 10)
     env.get_cell(1,1).organism = Automata(env.get_cell(1,1), env)

@@ -1,9 +1,8 @@
 import datetime
 import pygame
-import random
 import time
 
-from cell import Cell
+from cell import Cell, Plant, Organism, Wall
 from environment import Environment
 from automata import Automata
 
@@ -18,50 +17,6 @@ RED = (247, 129, 134)
 COEFF = 18
 FPS = 60
 clock = pygame.time.Clock()
-
-
-class Organism(Cell):
-    radius = 10
-
-    def __init__(self, x, y,  light):
-        colors = [YELLOW, RED, PURPLE]
-        super().__init__(x, y, possible_cells[0], light)
-
-        self.color = random.choice(colors)
-
-    def draw(self):
-        x = self.x * COEFF + COEFF // 2
-        y = self.y * COEFF + COEFF // 2
-        pygame.draw.circle(GUI.SCREEN, self.color,
-                           (x, y), Organism.radius)
-
-
-class Plant(Cell):
-    color = (110, 212, 123)
-    radius = 7
-
-    def __init__(self, x, y,  light):
-        super().__init__(x, y, possible_cells[1], light)
-
-    def draw(self):
-        x = self.x * COEFF + COEFF // 2
-        y = self.y * COEFF + COEFF // 2
-        pygame.draw.circle(GUI.SCREEN, Plant.color,
-                           (x, y), Plant.radius, 4)
-
-
-class Wall(Cell):
-    color = (51, 53, 53)
-    size = (16, 16)
-
-    def __init__(self, x, y, light):
-        super().__init__(x, y, possible_cells[2], light)
-
-    def draw(self):
-        x = self.x * COEFF
-        y = self.y * COEFF
-        pygame.draw.rect(GUI.SCREEN, Wall.color,
-                         (x, y, Wall.size[0], Wall.size[1]))
 
 
 class Button:
@@ -356,7 +311,7 @@ class GUI:
             for row in self.environment.grid:
                 for cell in row:
                     if cell.cell_type != 'empty':
-                        cell.draw()
+                        cell.draw(GUI.SCREEN)
 
             self.draw_button()
             if self.play:
