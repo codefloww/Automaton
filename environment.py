@@ -93,6 +93,20 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
         return states
+        def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height - y) / self.height
+
+    def set_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
     
     def get_authomaton_number(self):
         return len([x for x in self if x.organism != None])
