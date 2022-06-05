@@ -2,7 +2,7 @@
 
 from math import sqrt, floor
 import random
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from environment import Environment
 from cell import Cell
@@ -38,7 +38,6 @@ class Automata:
             if abilities[ability] > 0:
                 completed_action = ability(abilities[ability])
             if completed_action == True:
-                self.mutate()
                 break
 
     def move_ability(self, strength) -> None:
@@ -143,7 +142,30 @@ class Automata:
             return False
 
     def reproduce_ability(self, strength) -> None:
-        pass
+        """changed to cross_ability"""
+        nearest_cells = [x for x in self.env.get_neighbors(self.x, self.y) if x.organism != None]
+        for cell in nearest_cells:
+            if cell.cell_type != "organism":
+                continue
+            if strength == 0:
+                if abs(self.x-cell.x) == 1 and abs(self.y-cell.y) == 1:
+                    chosen_cell = cell
+                    break
+            elif strength == 1:
+                if (self.x-cell.x) == 0 or (self.y-cell.y) == 0:
+                    chosen_cell = cell
+                    break
+            else:
+                chosen_cell = cell
+                break
+        else:
+            return False
+        self, chosen_cell.organism = self.crossover(chosen_cell.organism)
+        if_mutate = random.choice([0, 1, 2])
+        if if_mutate == 0:
+            self.mutate()
+        self.energy -= 20
+        return True
 
     def kill_ability(self, strength) -> None:
         """
@@ -260,17 +282,17 @@ class Automata:
 
 if __name__ == "__main__":
     # Змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
-    env = Environment(20, 20)
+    env = Environment(50, 50)
     my_cell = env.get_cell(0, 0)
     authomatas = []
     autho_amount = []
-    for i in range(300):
-        _cell = Cell(random.randint(0, 19), random.randint(0, 19))
+    for i in range(500):
+        _cell = Cell(random.randint(0, 49), random.randint(0, 49))
         _cell.organism = Automata(_cell, env)
         env.set_cell(_cell.x, _cell.y, _cell)
         authomatas.append(_cell.organism)
     for i in range(1) :
-        env.get_cell(random.randint(0, 19) ,random.randint(0, 19)).cell_type = "plant"
+        env.get_cell(random.randint(0, 49) ,random.randint(0, 49)).cell_type = "plant"
     print(env)
     for i in range(500):
         for j in authomatas:
