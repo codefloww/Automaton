@@ -93,7 +93,7 @@ class Button:
         # get mouse position
         pos = pygame.mouse.get_pos()
 
-        # check mouseover and clecked conditions
+        # check mouseover and clicked conditions
         if self.rect.collidepoint(pos):
 
             if pygame.mouse.get_pressed()[0] and not self.clicked:  # 0 - left click
@@ -135,8 +135,8 @@ class GUI:
         pygame.font.init()
 
         self.font = pygame.font.SysFont("arial.ttf", 25)
-        # self.menu_color = (30, 50, 50)
-        self.menu_color = (51, 73, 68)
+        self.menu_color = (30, 50, 50)
+        # self.menu_color = (51, 73, 68)
         self.display_image = Background("images/green_bg.png", [0, 0]).image
 
         # load button images
@@ -151,10 +151,12 @@ class GUI:
         self.cur_spawning_button = None
 
         self.coeff = GUI.DISPLAY_X // environment.width
-        print(self.coeff)
         self.environment = environment
         self.queue_cell = []
+        self.start_time = 0
+        self.time_evolution = 0
         self.erase = False
+        self.play = False
         self.run = True
 
     def spawn_cell(self, name_class):
@@ -177,6 +179,7 @@ class GUI:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 x, y = x // self.coeff, y // self.coeff
+
                 if name_class == 'Cell':
                     self.add_cell(x, y, Organism(x, y, self.environment.light))
                 elif name_class == 'Plant':
@@ -198,7 +201,6 @@ class GUI:
                 if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                         self.environment.get_cell(x, y).cell_type != 'empty':
                     self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
-
 
     def button_navigate(self, button):
         self.button = button
@@ -235,7 +237,7 @@ class GUI:
         add cells to the grid and queue if coordinates is correct;
         """
         if cell.cell_type == 'wall':
-            if x*self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE - size[0] or y*self.coeff <= GUI.DISPLAY_Y:
+            if x*self.coeff+self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE or y*self.coeff <= GUI.DISPLAY_Y:
                 self.environment.set_cell(x, y, cell)
                 if size[1] == -1 and size[2] == -1:
                     self.queue_cell.append([(x, y)])
@@ -272,8 +274,15 @@ class GUI:
 
         # Play button
         if self.play_button.is_on and self.play_button.draw(GUI.SCREEN):
+            if self.play:
+                self.play = False
+                self.time_evolution += time.time() - self.start_time
+                self.start_time = 0
             self.play_button.turn_off()
         if self.play_button.draw(GUI.SCREEN):
+            if not self.play:
+                self.play = True
+                self.start_time = time.time()
             self.play_button.turn_on()
 
         # Erase button
@@ -298,15 +307,19 @@ class GUI:
         if self.quit_button.draw(GUI.SCREEN):
             self.run = False
 
-    def draw_text(self, time_start):
+    def draw_text(self):
         clock.tick(FPS)
 
         GUI.SCREEN.blit(
             self.font.render("Generation X", False, (10, 20, 10)), (10, 10)
         )
+        if self.play:
+            time_screen = self.time_evolution + time.time() - self.start_time
+        else:
+            time_screen = self.time_evolution
         GUI.SCREEN.blit(
             self.font.render(
-                f"Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}",
+                f"Time: {str(datetime.timedelta(seconds=round(time_screen)))}",
                 False,
                 (10, 20, 10),
             ),
@@ -327,13 +340,14 @@ class GUI:
                         cell.draw()
 
             self.draw_button()
-            self.setup()
+            if self.play:
+                self.setup()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
                     self.run = False
 
-            self.draw_text(time_start)
+            self.draw_text()
 
             pygame.display.update()
 
