@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-possible_cells = ['organism', 'plant', 'wall', 'empty']
+
+possible_cells = ["organism", "plant", "wall", "empty"]
 
 @dataclass
 class Cell:
@@ -11,7 +12,8 @@ class Cell:
     y: int
     cell_type: str = "empty"
     light: int = 10
-    organism: 'Organism' = None
+
+    organism: "Automata" = None
 
 
     def __str__(self):
