@@ -78,6 +78,11 @@ class Environment:
                     organisms.add(cell.organism)
         return organisms
 
+    def run_step(self):
+        organsims = env.get_organisms()
+        for organism in organsims:
+            organism._behavior_decider()
+
     def get_cells_pos(self, cell_type="empty"):
         """
         Return the positions of all cells of the specified type.
