@@ -15,6 +15,7 @@ class Simulation:
         # like self.gui.refresh(self.env) or self.gui.update(self.env)
         
 
+
     def run_simulation(self):
         print(self.env)
         for i in range(100):
