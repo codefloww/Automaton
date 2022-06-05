@@ -4,7 +4,7 @@ import time
 
 from cell import Cell, Plant, Organism, Wall
 from environment import Environment
-from automata import Automata
+
 
 possible_cells = ['organism', 'plant', 'wall', 'empty']
 
@@ -17,6 +17,7 @@ RED = (247, 129, 134)
 COEFF = 18
 FPS = 60
 clock = pygame.time.Clock()
+
 
 
 class Button:
@@ -140,8 +141,10 @@ class GUI:
                     while not deleted:
                         if self.queue_cell:
                             for x, y in self.queue_cell.pop():
+
                                 if self.environment.get_cell(x, y).cell_type != 'empty':
                                     self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
+
                                     deleted = True
                         else:
                             deleted = True
@@ -157,11 +160,14 @@ class GUI:
                 elif name_class == 'Plant':
                     self.add_cell(x, y, Plant(x, y, self.environment.light))
                 elif name_class == 'Wall':
+
                     for i in range(-1, 1):
                         x_c = x + i
                         for j in range(-1, 1):
                             y_c = y + j
+
                             self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), [16, i, j])
+
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
 
@@ -170,9 +176,11 @@ class GUI:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 x, y = x // self.coeff, y // self.coeff
+
                 if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                         self.environment.get_cell(x, y).cell_type != 'empty':
                     self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
+
 
     def button_navigate(self, button):
         self.button = button
@@ -208,26 +216,32 @@ class GUI:
         check (x, y) coordinates;
         add cells to the grid and queue if coordinates is correct;
         """
+
         if cell.cell_type == 'wall':
             if x*self.coeff+self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE and y*self.coeff <= GUI.DISPLAY_Y:
+
                 self.environment.set_cell(x, y, cell)
                 if size[1] == -1 and size[2] == -1:
                     self.queue_cell.append([(x, y)])
                 else:
                     self.queue_cell[-1].append((x, y))
         else:
+
             if x*self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE or y*self.coeff < GUI.DISPLAY_Y:
                 if self.environment.get_cell(x, y).cell_type != 'wall':
+
                     self.environment.set_cell(x, y, cell)
                     self.queue_cell.append([(x, y)])
                     return True
         return False
+
 
     def setup(self):
         self.environment = self.environment
 
     def draw_button(self):
         pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
+
         if self.light_button.is_on and self.light_button.draw(GUI.SCREEN):
             self.light_button.turn_off()
             self.change_light()
@@ -245,10 +259,12 @@ class GUI:
         self.button_navigate(self.wall_button)
 
         # Play button
+
         if self.play_button.is_on and self.play_button.draw(GUI.SCREEN) or self.end_generation:
             if self.play or self.end_generation:
                 self.play = False
                 self.end_generation = False
+
                 self.time_evolution += time.time() - self.start_time
                 self.start_time = 0
             self.play_button.turn_off()
@@ -261,11 +277,13 @@ class GUI:
         # Erase button
         if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
             self.erase = False
+
             print('erase button off')
             self.erase_button.turn_off()
         if self.erase_button.draw(GUI.SCREEN):
             self.erase = True
             print('erase button on')
+
             self.erase_button.turn_on()
 
         # Erase button
@@ -286,6 +304,7 @@ class GUI:
         GUI.SCREEN.blit(
             self.font.render("Generation X", False, (10, 20, 10)), (10, 10)
         )
+
         if self.play:
             time_screen = self.time_evolution + time.time() - self.start_time
         else:
@@ -310,6 +329,7 @@ class GUI:
 
             for row in self.environment.grid:
                 for cell in row:
+
                     if cell.cell_type != 'empty':
                         # print(cell.cell_type, cell)
                         cell.draw(GUI.SCREEN)
@@ -326,6 +346,7 @@ class GUI:
                 else:
                     self.end_generation = True
 
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
                     self.run = False
@@ -340,3 +361,4 @@ if __name__ == '__main__':
     display = GUI(Environment(55, 42))
 
     display.main(1000, 300)
+

@@ -1,7 +1,6 @@
 from cell import Cell
 from automata import Automata
 
-
 class Environment:
     """
     An environment.
@@ -16,6 +15,8 @@ class Environment:
         self.light = False
         self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
         self.killed_before = []
+
+        self.new_cells = []
 
     def __str__(self):
         """
@@ -61,6 +62,7 @@ class Environment:
             for cell in row:
                 yield cell
 
+
     def get_cell(self, x, y):
         """
         Return the cell at the specified coordinates.
@@ -76,6 +78,7 @@ class Environment:
         return organisms
 
     def run_authomatons(self):
+
         organsims = self.get_organisms()
         for organism in organsims:
             organism.make_move()
@@ -141,11 +144,10 @@ class Environment:
         for width in self.grid:
             for item in width:
                 item.light = boolean
-
-
 if __name__ == "__main__":
     env = Environment(10, 10)
     env.get_cell(1,1).organism = Automata(env.get_cell(1,1), env)
     for i in range(10):
         env.run_authomatons()
         print(env, "\n")
+

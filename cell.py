@@ -5,6 +5,7 @@ possible_cells = ['organism', 'plant', 'wall', 'empty']
 COEFF = 18
 
 
+
 @dataclass
 class Cell:
     """
@@ -14,7 +15,8 @@ class Cell:
     y: int
     cell_type: str = "empty"
     light: int = 10
-    organism: 'Organism' = None
+
+    organism: "Automata" = None
 
     def __str__(self):
         # return f"({self.x}, {self.y}) - {self.cell_type}"
@@ -40,7 +42,7 @@ class Cell:
 
     def get_organism(self):
         return self.organism
-
+    
 
 class Organism(Cell):
     radius = 10
