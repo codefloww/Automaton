@@ -1,5 +1,5 @@
 from cell import Cell
-# from automata import Automata
+from automata import Automata
 class Environment:
     """
     An environment.
@@ -96,11 +96,14 @@ class Environment:
     
     def get_authomaton_number(self):
         return len([x for x in self if x.organism != None])
-
+    
+    def run_authomatons(self):
+        autho_list = [x.organism for x in self if x.organism != None]
+        for i in autho_list:
+            i.make_move()
 if __name__ == "__main__":
-    env = Environment(10, 10, "empty")
-    env[5][3] = Cell(5, 3, "wall")
-    cell = env[5][3]
-    cell.organism = Automata(cell, env)
-    cell.organism.see_ability(2)
-
+    env = Environment(10, 10)
+    env.get_cell(1,1).organism = Automata(env.get_cell(1,1), env)
+    for i in range(10):
+        env.run_authomatons()
+        print(env, "\n")
