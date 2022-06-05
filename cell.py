@@ -41,6 +41,8 @@ class Cell:
 
     def get_organism(self):
         return self.organism
+    def set_organism(self, organism):
+        self.organism = organism
 
 
 if __name__ == "__main__":
