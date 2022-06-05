@@ -1,7 +1,7 @@
 """module for discrete evolving automata"""
 import random
 
-from math import sqrt
+from math import sqrt, floor
 import random
 from environment import Environment
 from cell import Cell
@@ -98,38 +98,74 @@ class Automata:
             self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
             move_away()
             
-
         elif len(danger_cells) > 0:
-            self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
+            self.x, self.y = (int(x) for x in escape(danger_cells).split(" "))
             move_away()
-            
 
         elif len(food_cells) > 0:
-            self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
+            self.x, self.y = (int(x) for x in move_towards(food_cells).split(" "))
             move_away()
             
         else :
             cell_to_migrate = random.choice(get_possible_moves())
             self.x, self.y = cell_to_migrate.x, cell_to_migrate.y
             move_away()
-            
+
 
     def see_ability(self, strength) -> None:
         return self.env.get_neighbors(self.x, self.y, strength)
 
+    def eat_ability(self, strength) -> None:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
+        to_eat = [x for x in self.see_ability(1) if x.cell_type == "plant"]
+        to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
+        if len(to_eat) > 0:
+            random.choice(to_eat).cell_type = "empty"
+            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
+        else :
+            raise Exception("No food around but eat_ability() casted.")
 
-    def eat_ability(self, strength) -> None:
-        pass
     def reproduce_ability(self, strength) -> None:
         pass
+
     def kill_ability(self, strength) -> None:
-        self
+        """
+        can kill if other.kill_ability < strength
+        """
+        if strength == 0 or self.energy < 10:
+            return
+        else:
+            if self.see_ability > 0:
+                nearest_cells = self.env.get_neighbors(self.x, self.y, 1)
+            else:
+                nearest_cells = []
+            for cell in nearest_cells:
+                if cell.organism:
+                    if cell.organism.kill_ability == strength:
+                        kill_probability = random.randint(0, 1)
+                        self.energy -= 10
+                    elif cell.organism.kill_ability < strength:
+                        kill_probability = 1
+                        self.energy -= 10
+                    else:
+                        kill_probability = -1
+                    if kill_probability == 1:
+                        self.env.killed_before.append(cell)
+                        self.energy += 20 if self.energy <= 30 else 50-self.energy
+                    if kill_probability != -1:
+                        break
+            else:
+                return
     def photosynth_ability(self, strength) -> None:
-        pass
+        self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
+
     def produce_ability(self, strength) -> None:
-        self
+        pass
+
     def hybernate_ability(self, strength) -> None:
-        self.energy += strength if self.energy + strength <= 10 else 10 - self.energy
+        if random.randint(0, 100) > strength*10 :
+            self.photosynth_ability(self._abilities_deciderself[self.photosynth_ability])
+        else:
+            self.energy += strength if self.energy + strength <= 50 else 50 - self.energy
 
 
     def mutate(self) -> None:
@@ -155,23 +191,25 @@ class Automata:
         return self.energy
 
 if __name__ == "__main__":
-    # тупо тест щоб побачити як чечіки збігаються в купу щоб побитись. Між іншим, я змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
+    # тупо тест щоб побачити як чечік біжить до рослинки і їсть її. Між іншим, я змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
     env = Environment(10, 10)
     my_cell = env.get_cell(0, 0)
     authomatas = []
-    for i in range(random.randint(0, 10)):
-        enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
-        enemy_cell.organism = Automata(enemy_cell, env)
-        env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
-        authomatas.append(enemy_cell.organism)
-    enemy_cell = Cell(3, 3)
-    enemy_cell.organism = Automata(enemy_cell, env)
-    env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+    # for i in range(random.randint(0, 10)):
+    #     enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
+    #     enemy_cell.organism = Automata(enemy_cell, env)
+    #     env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+    #     authomatas.append(enemy_cell.organism)
+    # enemy_cell = Cell(3, 3)
+    # enemy_cell.organism = Automata(enemy_cell, env)
+    # env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
     my_cell.organism = Automata(my_cell, env)
     my_man = my_cell.organism
+    env.get_cell(1, 3).cell_type = "plant"
     print(env)
     print()
     my_man.move_ability(4)
+    my_man.eat_ability(4)
     for i in authomatas:
         i.move_ability(4)
     print(env)
