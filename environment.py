@@ -66,11 +66,11 @@ class Environment:
         return self.grid[x][y]
 
     def get_organisms(self):
-        organisms = set()
+        organisms = []
         for row in self.grid:
             for cell in row:
-                if cell.get_type() == "organism":
-                    organisms.add(cell.organism)
+                if cell.organism != None:
+                    organisms.append(cell.organism)
         return organisms
 
     def run_authomatons(self):
