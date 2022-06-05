@@ -85,7 +85,7 @@ class Environment:
         return organisms
 
     def run_step(self):
-        organsims = env.get_organisms()
+        organsims = self.get_organisms()
         for organism in organsims:
             organism._behavior_decider()
 
@@ -153,7 +153,7 @@ class Environment:
 
 
 if __name__ == "__main__":
-    import automata
+    from automata import Automata
 
     env = Environment(10, 10, "empty")
     env[5][3] = Cell(5, 3, "wall")

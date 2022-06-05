@@ -5,7 +5,7 @@ import time
 
 from cell import Cell
 from environment import Environment
-from automata import Automata
+
 
 possible_cells = ["organism", "plant", "wall", "empty"]
 
@@ -288,8 +288,14 @@ class GUI:
                     return True
         return False
 
-    def setup(self):
-        self.environment = self.environment
+    def step(self, generations, steps):
+        """
+        setup the environment;
+        """
+        for gen in range(generations):
+            print("Generation:", gen)
+            for step in range(steps):
+                self.environment.run_step()
 
     def draw_button(self):
         pygame.draw.rect(
@@ -365,7 +371,7 @@ class GUI:
             (10, 10 + 25),
         )
 
-    def main(self):
+    def main(self, generations, steps):
         """
         draw all objects that could be changed
         """
@@ -379,8 +385,9 @@ class GUI:
                         cell.draw()
 
             self.draw_button()
+            print(self.environment.get_cells_pos("organism"))
             if self.play:
-                self.setup()
+                self.step(generations, steps)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
@@ -393,5 +400,4 @@ class GUI:
 
 if __name__ == "__main__":
     display = GUI(Environment(55, 42))
-
     display.main()

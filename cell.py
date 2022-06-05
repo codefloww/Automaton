@@ -8,6 +8,7 @@ class Cell:
     """
     A cell in the environment.
     """
+
     x: int
     y: int
     cell_type: str = "empty"
