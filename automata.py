@@ -26,7 +26,7 @@ class Automata:
         self._behavior_decider()
 
     def _abilities_decider(self) -> None:
-        abilities_namings = [self.see_ability, self.move_ability, self.kill_ability, self.eat_ability, self.photosynth_ability, self.hybernate_ability, self.reproduce_ability,self.produce_ability]
+        abilities_namings = [self.see_ability, self.move_ability, self.kill_ability, self.eat_ability, self.photosynth_ability, self.hybernate_ability, self.cross_ability, self.produce_ability]
         abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
         abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
@@ -141,7 +141,7 @@ class Automata:
         else :
             return False
 
-    def reproduce_ability(self, strength) -> None:
+    def cross_ability(self, strength) -> None:
         """changed to cross_ability"""
         nearest_cells = [x for x in self.env.get_neighbors(self.x, self.y) if x.organism != None]
         for cell in nearest_cells:
@@ -213,7 +213,7 @@ class Automata:
         if diff_energy < 5:
             return False
         number_of_child = 0
-        number_of_plants = 0
+        # number_of_plants = 0
         if strength <= 1:
             number_of_plants = diff_energy // 10
         elif strength == 2:
