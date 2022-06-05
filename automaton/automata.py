@@ -9,8 +9,7 @@ class Automata:
         self.GENOME_SIZE = 8
         self.genome = "".join([random.choice(["0", "1"]) for\
              x in range(2*self.GENOME_SIZE)]) if genome == None else genome
-        self.age = 0
-        self.energy = 4
+        self.energy = 20
         self.cell = cell
         self.x = self.cell.x
         self.y = self.cell.y
