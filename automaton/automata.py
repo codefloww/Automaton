@@ -132,7 +132,7 @@ class Automata:
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
             eaten_plant = random.choice(to_eat)
-            eaten_plant = Cell(eaten_plant.x, eaten_plant.y, 'empty', eaten_plant.light)
+            self.env[eaten_plant.x][eaten_plant.y] = Cell(eaten_plant.x, eaten_plant.y, 'empty', eaten_plant.light)
             self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
             return True
         else :
