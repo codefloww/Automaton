@@ -1,17 +1,21 @@
 from cell import Cell
-# from automata import Automata
+
 class Environment:
     """
     An environment.
     """
+
     def __init__(self, width, height, cell_type = None, lighting = None):
+
         """
         Initialize the environment.
         """
         self.width = width
         self.height = height
         self.size = width * height
+
         self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
+
 
     def __str__(self):
         """
@@ -63,11 +67,25 @@ class Environment:
         """
         return self.grid[x][y]
 
+
+    def get_cells_pos(self, cell_type=None):
+        """
+        Return the positions of all cells of the specified type.
+        """
+        cell_type = cell_type or "empty"
+        cell_positions = []
+        for row in self.grid:
+            for cell in row:
+                if cell.get_type() == cell_type:
+                    cell_positions.append(cell.get_pos())
+        return cell_positions
+
     def set_cell(self, x, y, cell):
         """
         Set the cell at the specified coordinates.
         """
         self.grid[x][y] = cell
+
 
     def get_neighbors(self, x, y, see_dist = 1):
         """
@@ -83,6 +101,7 @@ class Environment:
                     pass
         return output
 
+
     def get_environment_state(self):
         """
         Return the environment state.
@@ -91,7 +110,23 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
+
         return states
+
+    def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height-y)/self.height
+
+    def set_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
@@ -99,4 +134,5 @@ if __name__ == "__main__":
     cell = env[5][3]
     cell.organism = Automata(cell, env)
     cell.organism.see_ability(2)
+
 

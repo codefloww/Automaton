@@ -1,6 +1,4 @@
 """module for discrete evolving automata"""
-import random
-
 from math import sqrt
 import random
 from environment import Environment
@@ -33,6 +31,7 @@ class Automata:
         for ability in abilities:
             if abilities[ability] > 0:
                 completed_action = ability(abilities[ability], self.env)
+
             if completed_action:
                 break
 
@@ -106,6 +105,7 @@ class Automata:
         mutation_position = random.randint(0, self.GENOME_SIZE)
         self.genome = self.genome[:mutation_position] + str(int(self.genome[mutation_position])^1) + self.genome[mutation_position+1:]
         
+
     def crossover(self, other) -> None:
         if not isinstance(other, Automata):
             raise TypeError("other must be an Automata")
@@ -113,10 +113,12 @@ class Automata:
             raise ValueError("other must have the same genome size")
         crossing = random.randint(0, self.GENOME_SIZE)
         self.genome, other.genome = self.genome[0:crossing] + other.genome[crossing:], other.genome[0:crossing] + self.genome[crossing:]
+
         return self, other
 
     def get_genome(self) -> list:
         return self.genome
+
     def get_health(self) -> int:
         return self.health
     def get_age(self) -> int:
@@ -136,5 +138,6 @@ if __name__ == "__main__":
     my_man = my_cell.organism
     my_man.move_ability(4)
     print(env)
+
 
 
