@@ -135,7 +135,8 @@ class GUI:
         pygame.font.init()
 
         self.font = pygame.font.SysFont("arial.ttf", 25)
-        self.menu_color = (30, 50, 50)
+        # self.menu_color = (30, 50, 50)
+        self.menu_color = (51, 73, 68)
         self.display_image = Background("images/green_bg.png", [0, 0]).image
 
         # load button images
@@ -176,14 +177,7 @@ class GUI:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 x, y = x // self.coeff, y // self.coeff
-
-                if self.erase:
-                    print('try to erase')
-                    if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
-                            self.environment.get_cell(x, y).cell_type != 'empty':
-                        print('change')
-                        self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
-                elif name_class == 'Cell':
+                if name_class == 'Cell':
                     self.add_cell(x, y, Organism(x, y, self.environment.light))
                 elif name_class == 'Plant':
                     self.add_cell(x, y, Plant(x, y, self.environment.light))
@@ -196,6 +190,16 @@ class GUI:
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
 
+    def erase_cell(self):
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                x, y = x // self.coeff, y // self.coeff
+                if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
+                        self.environment.get_cell(x, y).cell_type != 'empty':
+                    self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
+
+
     def button_navigate(self, button):
         self.button = button
         if self.button.is_on and self.button.draw(GUI.SCREEN):
@@ -205,6 +209,8 @@ class GUI:
             if self.cur_spawning_button is None:
                 self.cur_spawning_button = self.button
                 self.button.turn_on()
+        if self.erase:
+            self.erase_cell()
         if self.button.is_on:
             self.spawn_cell(self.button.created_object)
 
