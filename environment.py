@@ -6,13 +6,14 @@ class Environment:
     An environment.
     """
 
-    def __init__(self, width, height, cell_type=None):
+    def __init__(self, width, height, cell_type="empty", lighting=None):
 
         """
         Initialize the environment.
         """
         self.width = width
         self.height = height
+        self.light = False
         self.size = width * height
         self.grid = [
             [Cell(x, y, cell_type, lighting) for y in range(height)]
@@ -70,11 +71,11 @@ class Environment:
         """
         return self.grid[x][y]
 
-    def get_cells_pos(self, cell_type=None):
+    def get_cells_pos(self, cell_type="empty"):
         """
         Return the positions of all cells of the specified type.
         """
-        cell_type = cell_type or "empty"
+        cell_type = cell_type
         cell_positions = []
         for row in self.grid:
             for cell in row:
@@ -111,15 +112,29 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
 
+        return states
+
     def lighting(self, y):
         """
         Return coefficient of external illumination
         0 <= coefficient <= 1
         """
-        return (self.height-y)/self.height
+        return (self.height - y) / self.height
+
+    def set_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
 
 
 if __name__ == "__main__":
+    import automata
+
     env = Environment(10, 10, "empty")
     env[5][3] = Cell(5, 3, "wall")
-    print(env)
+    cell = env[5][3]
+    cell.organism = automata.Automata(cell, env)
+    cell.organism.see_ability(2)
