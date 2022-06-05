@@ -1,11 +1,11 @@
-from environment import Environment
-from cell import Cell
 from visual import GUI
+from environment import Environment
 
 
 class Simulation:
     def __init__(self, env=None):
-        self.env = env or Environment(40, 30)
+        # 55, 42
+        self.env = env or Environment(55, 42)
         self.gui = GUI(self.env)
         self.generation = 0
 

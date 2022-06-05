@@ -5,6 +5,7 @@ class Environment:
     """
     An environment.
     """
+
     def __init__(self, width, height, cell_type = None, lighting = None):
         """
         Initialize the environment.
@@ -109,6 +110,21 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
         return states
+
+    def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height-y)/self.height
+
+    def set_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
