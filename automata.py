@@ -22,17 +22,19 @@ class Automata:
         return f"{self.get_genome()} - {self.x}, {self.y}"
 
     def _abilities_decider(self) -> None:
-        abilities_namings = [self.see_ability, self.move_ability, self.eat_ability,  self.kill_ability,self.hybernate_ability, self.photosynth_ability, self.reproduce_ability,self.produce_ability]
+        abilities_namings = [self.see_ability, self.move_ability, self.eat_ability,  self.kill_ability, self.hybernate_ability, self.photosynth_ability, self.reproduce_ability,self.produce_ability]
         abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
         abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
 
     def _behavior_decider(self)->None:
         abilities = self._abilities_decider()
+        del abilities[self.see_ability]
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
                 completed_action = ability(abilities[ability], self.env)
+                completed_action = True
             if completed_action:
                 break
 
@@ -70,12 +72,12 @@ class Automata:
                     possible_move_dict[f"{j[0].x} {j[0].y}"].append(j[1])
             return possible_move_dict
 
-        def escape(danger_cells): # визначає найкращі за векторним добутком координати для втечі і повертає їх у формі ("x", "y")
+        def escape(danger_cells): # визначає найкращі за векторним добутком координати для ВТЕЧІ і повертає їх у формі ("x", "y")
             possible_moves = get_possible_moves()
             possible_move_dict = get_all_ranges(possible_moves, danger_cells)
             return max(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
 
-        def move_towards(pray_cells): # визначає найкращі за векторним добутком координати для погоні і повертає їх у формі ("x", "y")
+        def move_towards(pray_cells): # визначає найкращі за векторним добутком координати для ПОГОНІ і повертає їх у формі ("x", "y")
             possible_moves = get_possible_moves()
             possible_move_dict = get_all_ranges(possible_moves, pray_cells)
             return min(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
@@ -105,7 +107,7 @@ class Automata:
         elif len(food_cells) > 0:
             self.x, self.y = (int(x) for x in move_towards(food_cells).split(" "))
             move_away()
-            
+
         else :
             cell_to_migrate = random.choice(get_possible_moves())
             self.x, self.y = cell_to_migrate.x, cell_to_migrate.y
