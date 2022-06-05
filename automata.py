@@ -248,7 +248,7 @@ class Automata:
                 return True
             return False
 
-    def hybernate_ability(self, strength) -> None:
+    def hybernate_ability(self, strength) -> bool:
 
         if random.randint(0, 100) > strength*10 :
             return self.photosynth_ability(self._abilities_decider()[self.photosynth_ability])
