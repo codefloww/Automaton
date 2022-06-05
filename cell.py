@@ -46,5 +46,5 @@ class Cell:
 
 
 if __name__ == "__main__":
-    cell = Cell(1, 2, "wall")
+    cell = Cell(1, 2, "wall", 10)
     print(cell)
