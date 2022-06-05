@@ -120,12 +120,15 @@ class Automata:
                 if cell.organism:
                     if cell.organism.kill_ability == strength:
                         kill_probability = random.randint(0, 1)
+                        self.energy -= 10
                     elif cell.organism.kill_ability < strength:
                         kill_probability = 1
+                        self.energy -= 10
                     else:
                         kill_probability = -1
                     if kill_probability == 1:
                         self.env.killed_before.append(cell)
+                        self.energy += 20
                     if kill_probability != -1:
                         break
             else:
