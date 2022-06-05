@@ -1,12 +1,11 @@
 from cell import Cell
 
-
 class Environment:
     """
     An environment.
     """
 
-    def __init__(self, width, height, cell_type='empty'):
+    def __init__(self, width, height, cell_type = None, lighting = None):
 
         """
         Initialize the environment.
@@ -14,8 +13,9 @@ class Environment:
         self.width = width
         self.height = height
         self.size = width * height
-        self.light = False
-        self.grid = [[Cell(x, y, self.light, cell_type) for y in range(height)] for x in range(width)]
+
+        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
+
 
     def __str__(self):
         """
@@ -67,6 +67,7 @@ class Environment:
         """
         return self.grid[x][y]
 
+
     def get_cells_pos(self, cell_type=None):
         """
         Return the positions of all cells of the specified type.
@@ -85,8 +86,21 @@ class Environment:
         """
         self.grid[x][y] = cell
 
-    def get_neighbors(self, x, y):
-        pass
+
+    def get_neighbors(self, x, y, see_dist = 1):
+        """
+        Gets the neighbors of a cell at the specified coordinates.
+        """
+        output = []
+        for i in range(-see_dist, see_dist+1):
+            for j in range(-see_dist, see_dist+1):
+                try :
+                    output.append(self.get_cell(x + i, y + j)) if \
+                     (x+i, y+j) != (x, y) and x + i >= 0 and y + j >= 0 else 1
+                except IndexError:
+                    pass
+        return output
+
 
     def get_environment_state(self):
         """
@@ -96,6 +110,8 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
+
+        return states
 
     def lighting(self, y):
         """
@@ -112,8 +128,11 @@ class Environment:
             for item in width:
                 item.light = boolean
 
-
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
     env[5][3] = Cell(5, 3, "wall")
-    print(env)
+    cell = env[5][3]
+    cell.organism = Automata(cell, env)
+    cell.organism.see_ability(2)
+
+
