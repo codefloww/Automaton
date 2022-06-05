@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 possible_cells = ['organism', 'plant', 'wall', 'empty']
+
+
 @dataclass
 class Cell:
     """
@@ -21,6 +23,9 @@ class Cell:
     def __hash__(self):
         return hash((self.x, self.y))
 
+    def set_organism(self, automata):
+        self.organism = automata
+
     def get_pos(self):
         return self.x, self.y
 
@@ -32,7 +37,6 @@ class Cell:
 
     def get_organism(self):
         return self.organism
-    
 
 
 if __name__ == "__main__":
