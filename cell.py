@@ -2,19 +2,17 @@ from dataclasses import dataclass
 
 possible_cells = ["organism", "plant", "wall", "empty"]
 
+
 @dataclass
 class Cell:
     """
     A cell in the environment.
     """
-
     x: int
     y: int
     cell_type: str = "empty"
-
     light: bool = False
     organism: "Automata" = None
-
 
     def __str__(self):
         return f"({self.x}, {self.y}) - {self.cell_type}"

@@ -15,7 +15,7 @@ class Simulation:
         # self.gui.setup()
         # # the second stage of gui in which we run evolution(should start after pressing play in previous function)
         # self.run_simulation()
-        
+
         self.gui.main(self.generations, self.steps)
 
     # def run_simulation(self):
@@ -24,9 +24,6 @@ class Simulation:
     #         for step in range(300):
     #             self.run_step()
     #             self.gui.run() # updates gui
-
-   
-        
 
 
 if __name__ == "__main__":
