@@ -2,7 +2,7 @@
 
 from math import sqrt, floor
 import random
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from environment import Environment
 from cell import Cell
