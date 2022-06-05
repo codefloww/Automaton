@@ -23,9 +23,9 @@ clock = pygame.time.Clock()
 class Organism(Cell):
     radius = 10
 
-    def __init__(self, x, y,  light):
+    def __init__(self, x, y,  light, organism):
         colors = [YELLOW, RED, PURPLE]
-        super().__init__(x, y, possible_cells[0], light)
+        super().__init__(x, y, possible_cells[0], light, organism)
         self.color = random.choice(colors)
 
     def draw(self):
@@ -33,6 +33,7 @@ class Organism(Cell):
         y = self.y * COEFF + COEFF // 2
         pygame.draw.circle(GUI.SCREEN, self.color,
                            (x, y), Organism.radius)
+
 
 
 
@@ -203,7 +204,7 @@ class GUI:
                 x, y = x // self.coeff, y // self.coeff
 
                 if name_class == 'Cell':
-                    self.add_cell(x, y, Organism(x, y, self.environment.light))
+                    self.add_cell(x, y, Organism(x, y, self.environment.light, "Automata"))
                 elif name_class == 'Plant':
                     self.add_cell(x, y, Plant(x, y, self.environment.light))
                 elif name_class == 'Wall':
