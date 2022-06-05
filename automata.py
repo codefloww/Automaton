@@ -83,7 +83,7 @@ class Automata:
             for cell in nearest_cells:
                 if cell.organism:
                     if cell.organism.kill_ability == strength:
-                        kill_probability = random.randint(0,1)
+                        kill_probability = random.randint(0, 1)
                     elif cell.organism.kill_ability < strength:
                         kill_probability = 1
                     else:
