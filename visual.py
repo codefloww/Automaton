@@ -56,8 +56,8 @@ class Wall(Cell):
         super().__init__(x, y, possible_cells[2], light)
 
     def draw(self):
-        x = self.x * COEFF + COEFF // 2
-        y = self.y * COEFF + COEFF // 2
+        x = self.x * COEFF
+        y = self.y * COEFF
         pygame.draw.rect(GUI.SCREEN, Wall.color,
                          (x, y, Wall.size[0], Wall.size[1]))
 
@@ -238,9 +238,10 @@ class GUI:
                     self.queue_cell[-1].append((x, y))
         else:
             if x*self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE or y*self.coeff < GUI.DISPLAY_Y:
-                self.environment.set_cell(x, y, cell)
-                self.queue_cell.append([(x, y)])
-                return True
+                if self.environment.get_cell(x, y).cell_type != 'wall':
+                    self.environment.set_cell(x, y, cell)
+                    self.queue_cell.append([(x, y)])
+                    return True
         return False
 
     def main(self):
