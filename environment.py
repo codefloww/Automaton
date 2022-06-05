@@ -6,7 +6,8 @@ class Environment:
     An environment.
     """
 
-    def __init__(self, width, height, cell_type = None, lighting = None):
+    def __init__(self, width, height, cell_type=None):
+
         """
         Initialize the environment.
         """

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 possible_cells = ['organism', 'plant', 'wall', 'empty']
 
+
 @dataclass
 class Cell:
     """
@@ -9,8 +10,8 @@ class Cell:
 
     x: int
     y: int
+    light: bool = False
     cell_type: str = "empty"
-    light: int = 10
     organism: 'Organism' = None
 
 
@@ -18,7 +19,6 @@ class Cell:
         return f"({self.x}, {self.y}) - {self.cell_type}"
 
     def __eq__(self, other):
-
         return (
             self.x == other.x
             and self.y == other.y
@@ -45,3 +45,4 @@ class Cell:
 if __name__ == "__main__":
     cell = Cell(1, 2, "wall", 10)
     print(cell)
+

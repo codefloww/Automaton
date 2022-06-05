@@ -117,12 +117,10 @@ class GUI:
     MENU_SIZE = 80
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-
     def __init__(self, environment):
         """
         initialisation of the display, started color theme, buttons
         """
-
         pygame.init()
         pygame.display.set_caption('Evolution Game')
         pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
@@ -148,7 +146,6 @@ class GUI:
         self.queue_cell = []
         self.erase = False
         self.run = True
-
 
     def spawn_cell(self, name_class):
         """
@@ -188,7 +185,6 @@ class GUI:
                             self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), [16, i, j])
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
-
 
     def button_navigate(self, button):
         self.button = button
@@ -243,7 +239,6 @@ class GUI:
         time_start = time.time()
         while self.run:
             GUI.SCREEN.blit(self.display_image, (0, 0))
-
             for width in self.environment.grid:
                 for cell in width:
                     if cell.cell_type != 'empty':
@@ -256,7 +251,7 @@ class GUI:
             if self.light_button.draw(GUI.SCREEN):
                 self.light_button.turn_on()
                 self.change_light()
-            
+
             # Cell button
             self.button_navigate(self.cell_button)
 
@@ -271,14 +266,6 @@ class GUI:
                 self.play_button.turn_off()
             if self.play_button.draw(GUI.SCREEN):
                 self.play_button.turn_on()
-
-            # Erase button
-            if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
-                self.erase = False
-                self.erase_button.turn_off()
-            if self.erase_button.draw(GUI.SCREEN):
-                self.erase = True
-                self.erase_button.turn_on()
 
             # Erase button
             if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
@@ -307,7 +294,5 @@ class GUI:
 
 
 if __name__ == '__main__':
-
     display = GUI(Environment(55, 42))
-
     display.main()
