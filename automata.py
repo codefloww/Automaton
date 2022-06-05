@@ -43,6 +43,7 @@ class Automata:
             self.cell.organism = None
             self.cell = self.env.get_cell(self.x, self.y)
             self.env.get_cell(self.x, self.y).organism = self
+            self.energy -= 1
 
         def get_possible_moves():
             possible_moves = []
@@ -50,8 +51,11 @@ class Automata:
             for i in range(-strength, strength+1):
                 for j in range(-strength, strength+1):
                     if abs(i) + abs(j) <= strength and self.x + i >= 0 and self.y + j >= 0:
-                        possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
+                        try :
+                            possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
                              self.env.get_cell(self.x+i, self.y+j).organism == None else 1
+                        except IndexError:
+                            pass
             return possible_moves
         
         def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...] 
@@ -93,26 +97,26 @@ class Automata:
         if len(pray_cells) > 0:
             self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+            
 
         elif len(danger_cells) > 0:
             self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+            
 
         elif len(food_cells) > 0:
             self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+            
         else :
             cell_to_migrate = random.choice(get_possible_moves())
             self.x, self.y = cell_to_migrate.x, cell_to_migrate.y
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+            
 
     def see_ability(self, strength) -> None:
         return self.env.get_neighbors(self.x, self.y, strength)
-        
+
 
     def eat_ability(self, strength) -> None:
         pass
@@ -151,19 +155,25 @@ class Automata:
         return self.energy
 
 if __name__ == "__main__":
+    # тупо тест щоб побачити як чечіки збігаються в купу щоб побитись. Між іншим, я змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
     env = Environment(10, 10)
     my_cell = env.get_cell(0, 0)
+    authomatas = []
     for i in range(random.randint(0, 10)):
         enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
         enemy_cell.organism = Automata(enemy_cell, env)
         env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+        authomatas.append(enemy_cell.organism)
     enemy_cell = Cell(3, 3)
     enemy_cell.organism = Automata(enemy_cell, env)
     env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
     my_cell.organism = Automata(my_cell, env)
     my_man = my_cell.organism
     print(env)
+    print()
     my_man.move_ability(4)
+    for i in authomatas:
+        i.move_ability(4)
     print(env)
 
 
