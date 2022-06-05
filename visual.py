@@ -366,7 +366,7 @@ class GUI:
                     elif self.generations:
                         self.steps = steps - 1
                         self.generations -= 1
-                    self.setup()
+                    self.environment.run_authomatons()
                 else:
                     self.end_generation = True
 
@@ -383,4 +383,4 @@ if __name__ == '__main__':
 
     display = GUI(Environment(55, 42))
 
-    display.main(10, 5)
+    display.main(1000, 300)

@@ -11,6 +11,7 @@ class Environment:
         self.width = width
         self.height = height
         self.size = width * height
+        self.light = False
         self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
         self.killed_before = []
 
@@ -97,10 +98,30 @@ class Environment:
     def get_authomaton_number(self):
         return len([x for x in self if x.organism != None])
 
+    def lighting(self, y):
+        """
+        Return coefficient of external illumination
+        0 <= coefficient <= 1
+        """
+        return (self.height - y) / self.height
+
+    def set_light(self, boolean):
+        """
+        change cell.light for every object in grid
+        """
+        for width in self.grid:
+            for item in width:
+                item.light = boolean
+
+    def run_authomatons(self):
+        autho_list = [x.organism for x in self if x.organism != None]
+        for i in autho_list:
+            i.make_move()
+
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
     env[5][3] = Cell(5, 3, "wall")
-    cell = env[5][3]
-    cell.organism = Automata(cell, env)
-    cell.organism.see_ability(2)
+    # cell = env[5][3]
+    # # cell.organism = Automata(cell, env)
+    # cell.organism.see_ability(2)
 
