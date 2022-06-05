@@ -33,7 +33,7 @@ Here you can click on light bulb to turn on light in the environment:
 You can also choose different instances to place in environment, erase them, go back via Ctrl-Z.  
 <img width="640" alt="image" src="https://user-images.githubusercontent.com/90351072/172069046-ae76a72a-3278-4aba-a960-abd9d2fd323c.png">  
 After that you press Play button to run simulation:  
-![](https:/github.com/codefloww/images/example.gif)
+![](https:/github.com/codefloww/Automaton/images/example.gif)
 Every simulation may be different from each other because of the mutations and crossover.)
 
 ### License
