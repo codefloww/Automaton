@@ -1,5 +1,5 @@
 from cell import Cell
-# from automata import Automata
+from automata import Automata
 class Environment:
     """
     An environment.
@@ -11,7 +11,6 @@ class Environment:
         self.width = width
         self.height = height
         self.size = width * height
-        self.light = False
         self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
         self.killed_before = []
 
@@ -59,11 +58,37 @@ class Environment:
             for cell in row:
                 yield cell
 
+
     def get_cell(self, x, y):
         """
         Return the cell at the specified coordinates.
         """
         return self.grid[x][y]
+
+    def get_organisms(self):
+        organisms = []
+        for row in self.grid:
+            for cell in row:
+                if cell.organism != None:
+                    organisms.append(cell.organism)
+        return organisms
+
+    def run_authomatons(self):
+        organsims = self.get_organisms()
+        for organism in organsims:
+            organism.make_move()
+
+    def get_cells_pos(self, cell_type="empty"):
+        """
+        Return the positions of all cells of the specified type.
+        """
+        cell_type = cell_type
+        cell_positions = []
+        for row in self.grid:
+            for cell in row:
+                if cell.get_type() == cell_type:
+                    cell_positions.append(cell.get_pos())
+        return cell_positions
 
     def set_cell(self, x, y, cell):
         """
@@ -71,16 +96,20 @@ class Environment:
         """
         self.grid[x][y] = cell
 
-    def get_neighbors(self, x, y, see_dist = 1):
+    def get_neighbors(self, x, y, see_dist=1):
         """
         Gets the neighbors of a cell at the specified coordinates.
         """
         output = []
-        for i in range(-see_dist, see_dist+1):
-            for j in range(-see_dist, see_dist+1):
-                try :
-                    output.append(self.get_cell(x + i, y + j)) if \
-                     (x+i, y+j) != (x, y) and x + i >= 0 and y + j >= 0 else 1
+
+        for i in range(-see_dist, see_dist + 1):
+            for j in range(-see_dist, see_dist + 1):
+                try:
+
+                    output.append(self.get_cell(x + i, y + j)) if (x + i, y + j) != (
+                        x,
+                        y,
+                    ) and x + i >= 0 and y + j >= 0 else 1
                 except IndexError:
                     pass
         return output
@@ -93,10 +122,8 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
+
         return states
-    
-    def get_authomaton_number(self):
-        return len([x for x in self if x.organism != None])
 
     def lighting(self, y):
         """
@@ -112,16 +139,9 @@ class Environment:
         for width in self.grid:
             for item in width:
                 item.light = boolean
-
-    def run_authomatons(self):
-        autho_list = [x.organism for x in self if x.organism != None]
-        for i in autho_list:
-            i.make_move()
-
 if __name__ == "__main__":
-    env = Environment(10, 10, "empty")
-    env[5][3] = Cell(5, 3, "wall")
-    # cell = env[5][3]
-    # # cell.organism = Automata(cell, env)
-    # cell.organism.see_ability(2)
-
+    env = Environment(10, 10)
+    env.get_cell(1,1).organism = Automata(env.get_cell(1,1), env)
+    for i in range(10):
+        env.run_authomatons()
+        print(env, "\n")
