@@ -9,9 +9,9 @@ from environment import Environment
 from cell import Cell
 
 class Automata:
-    def __init__(self, cell, env) -> None:
+    def __init__(self, cell, env, genome=None) -> None:
         self.GENOME_SIZE = 8
-        self.genome = "".join([random.choice(["0", "1"]) for x in range(2*self.GENOME_SIZE)])
+        self.genome = "".join([random.choice(["0", "1"]) for x in range(2*self.GENOME_SIZE)]) if genome==None else genome
         self.age = 0
         self.energy = 50
         self.cell = cell
@@ -153,7 +153,7 @@ class Automata:
 
     def reproduce_ability(self, strength) -> bool:
         """changed to cross_ability"""
-        return False
+        # if strength
 
     def kill_ability(self, strength) -> bool:
         """
@@ -191,27 +191,47 @@ class Automata:
         self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
 
     def produce_ability(self, strength) -> bool:
-        diff_energy = self.energy - 40
+        diff_energy = self.energy - 35
         if diff_energy < 5:
             return False
+        number_of_child = 0
         if strength <= 1:
             number_of_plants = diff_energy // 10
+        elif strength == 2:
+            if diff_energy >= 10:
+                number_of_child = 1
+                number_of_plants = 0
+            else:
+                number_of_plants = diff_energy // 5
         else:
+            if diff_energy >= 10:
+                number_of_child = 1
+                diff_energy -= 10
             number_of_plants = diff_energy // 5
         nearest_cells = self.env.get_neighbors(self.x, self.y)
-        for cell in nearest_cells:
-            if number_of_plants > 0:
-                if cell.cell_type == "empty":
-                    self.env.grid[cell.x][cell.y](Cell(cell.x, cell.y, "plant"))
-                    number_of_plants -= 1
-                if number_of_plants == 0:
-                    break
-            else:
-                break
-        else:
+        if number_of_plants == 0 and number_of_plants == 0:
             return False
-        self.energy = 50
-        return True
+        check = False
+        for cell in nearest_cells:
+            if cell.cell_type != "empty":
+                continue
+            if number_of_child != 0:
+                cell.cell_type = "organism"
+                cell.organism = Automata(cell, self.env, self.genome)
+                number_of_child -= 1
+                self.energy -= 10
+                check = True
+            if number_of_plants > 0:
+                self.env.grid[cell.x][cell.y](Cell(cell.x, cell.y, "plant"))
+                number_of_plants -= 1
+                check = True
+            if number_of_plants == 0 and number_of_plants == 0:
+                self.energy = min(35, self.energy)
+                return True
+        else:
+            if check:
+                return True
+            return False
 
     def hybernate_ability(self, strength) -> None:
         if random.randint(0, 100) > strength*10 :
