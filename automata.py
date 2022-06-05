@@ -121,8 +121,7 @@ class Automata:
             self.x, self.y = cell_to_migrate.x, cell_to_migrate.y
             move_away()
 
-
-    def see_ability(self, strength) -> None:
+    def see_ability(self, strength) -> list:
         return self.env.get_neighbors(self.x, self.y, strength)
 
     def eat_ability(self, strength) -> None:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
@@ -130,20 +129,20 @@ class Automata:
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
             random.choice(to_eat).cell_type = "empty"
-            self.energy += strength*5
-            self.produce_ability(self._abilities_decider()[self.produce_ability])
+            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
         else :
             raise Exception("No food around but eat_ability() casted.")
 
-    def reproduce_ability(self, strength) -> None:
-        pass
+    def reproduce_ability(self, strength) -> bool:
+        """changed to cross_ability"""
+        return False
 
-    def kill_ability(self, strength) -> None:
+    def kill_ability(self, strength) -> bool:
         """
         can kill if other.kill_ability < strength
         """
         if strength == 0 or self.energy < 10:
-            return
+            return False
         else:
             if self._abilities_decider()[self.see_ability] > 0:
                 nearest_cells = self.env.get_neighbors(self.x, self.y, 1)
@@ -161,21 +160,21 @@ class Automata:
                         kill_probability = -1
                     if kill_probability == 1:
                         self.env.killed_before.append(cell)
-                        self.energy += 20
-                        self.produce_ability(self._abilities_decider()[self.produce_ability])
-                    if kill_probability != -1:
+                        self.energy += 20 if self.energy <= 30 else 50-self.energy
+                        return True
+                    elif kill_probability == 0:
+                        return True
+                    elif kill_probability != -1:
                         break
-            else:
-                return
+            return False
 
     def photosynth_ability(self, strength) -> None:
-        self.energy += floor(strength*1.5)
-        self.produce_ability(self._abilities_decider()[self.produce_ability])
+        self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
 
-    def produce_ability(self, strength) -> None:
-        diff_energy = self.energy - 50
-        if diff_energy <= 5:
-            return
+    def produce_ability(self, strength) -> bool:
+        diff_energy = self.energy - 40
+        if diff_energy < 5:
+            return False
         if strength <= 1:
             number_of_plants = diff_energy // 10
         else:
@@ -186,9 +185,14 @@ class Automata:
                 if cell.cell_type == "empty":
                     self.env.grid[cell.x][cell.y](Cell(cell.x, cell.y, "plant"))
                     number_of_plants -= 1
+                if number_of_plants == 0:
+                    break
             else:
                 break
+        else:
+            return False
         self.energy = 50
+        return True
 
     def hybernate_ability(self, strength) -> None:
         if random.randint(0, 100) > strength*10 :
@@ -212,7 +216,7 @@ class Automata:
         )
         return self, other
 
-    def get_genome(self) -> list:
+    def get_genome(self) -> str:
         return self.genome
 
     def get_age(self) -> int:
