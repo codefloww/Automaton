@@ -19,13 +19,34 @@ class Automata:
     def __str__(self) -> str:
         return f"{self.get_genome()} - {self.x}, {self.y}"
 
+
     def make_move(self):
         self._behavior_decider()
 
     def _abilities_decider(self) -> None:
-        abilities_namings = [self.see_ability, self.move_ability, self.kill_ability, self.eat_ability, self.photosynth_ability, self.hybernate_ability, self.cross_ability, self.produce_ability]
-        abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
-        abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
+
+        abilities_namings = [
+            self.see_ability,
+            self.move_ability,
+            self.eat_ability,
+            self.kill_ability,
+            self.photosynth_ability,
+            self.hybernate_ability,
+            self.reproduce_ability,
+            self.produce_ability,
+        ]
+        abilities_strength = list(
+            map(
+                lambda x: int(self.genome[x : x + 2], 2),
+                range(0, self.GENOME_SIZE * 2, 2),
+            )
+        )
+        abilities = {
+            abilities_namings[i]: abilities_strength[i]
+            for i in range(len(abilities_namings))
+        }
+
+
         return abilities
 
     def _behavior_decider(self) -> None:
@@ -40,7 +61,9 @@ class Automata:
     def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
 
-        def move_away(): # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід.
+
+
+        def move_away():  # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід.
             self.cell.organism = None
             self.cell = self.env.get_cell(self.x, self.y)
             self.env.get_cell(self.x, self.y).organism = self
@@ -265,14 +288,46 @@ class Automata:
         if self.GENOME_SIZE != other.GENOME_SIZE:
             raise ValueError("other must have the same genome size")
         crossing = random.randint(0, self.GENOME_SIZE)
-        self.genome, other.genome = self.genome[0:crossing] + other.genome[crossing:], other.genome[0:crossing] + self.genome[crossing:]
+
+
+
+        self.genome, other.genome = (
+            self.genome[0:crossing] + other.genome[crossing:],
+            other.genome[0:crossing] + self.genome[crossing:],
+        )
+
+
         return self, other
 
     def get_genome(self) -> list:
         return self.genome
+
     def get_health(self) -> int:
         return self.health
+
     def get_age(self) -> int:
         return self.age
+      
     def get_energy(self) -> int:
         return self.energy
+if __name__ == "__main__":
+    # Змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
+    env = Environment(10, 10)
+    my_cell = env.get_cell(0, 0)
+    authomatas = []
+
+    for i in range(50):
+        _cell = Cell(random.randint(0, 8), random.randint(0, 8))
+        _cell.organism = Automata(_cell, env)
+        env.set_cell(_cell.x, _cell.y, _cell)
+        authomatas.append(_cell.organism)
+    for i in range(50):
+        env.get_cell(random.randint(0, 9), random.randint(0, 9)).cell_type = "plant"
+    print(env)
+    for i in range(10):
+        for j in authomatas:
+            j.make_move()
+        print(env)
+        print()
+    print(env.killed_before)
+

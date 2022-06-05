@@ -6,6 +6,7 @@ from cell import Cell, Plant, Organism, Wall
 from environment import Environment
 from automata import Automata
 
+
 possible_cells = ['organism', 'plant', 'wall', 'empty']
 
 # color palette
@@ -302,7 +303,9 @@ class GUI:
         clock.tick(FPS)
 
         GUI.SCREEN.blit(
+
             self.font.render(f"Generation {generation - self.generations}", False, (10, 20, 10)), (10, 10)
+
         )
 
         if self.play:
@@ -331,7 +334,7 @@ class GUI:
                 for cell in row:
 
                     if cell.cell_type != 'empty':
-                        # print(cell.cell_type, cell)
+
                         cell.draw(GUI.SCREEN)
 
             self.draw_button()
