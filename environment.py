@@ -5,6 +5,7 @@ class Environment:
     An environment.
     """
 
+
     def __init__(self, width, height, cell_type="empty", lighting=None):
 
 
@@ -16,6 +17,10 @@ class Environment:
 
         self.light = False
         self.size = width * height
+
+        self.light = False
+      
+
         self.grid = [
             [Cell(x, y, cell_type, lighting) for y in range(height)]
             for x in range(width)
@@ -150,6 +155,7 @@ class Environment:
         for width in self.grid:
             for item in width:
                 item.light = boolean
+
 
 if __name__ == "__main__":
     import automata

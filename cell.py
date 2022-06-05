@@ -11,8 +11,8 @@ class Cell:
     x: int
     y: int
     cell_type: str = "empty"
-    light: int = 10
 
+    light: bool = False
     organism: "Automata" = None
 
 
@@ -44,7 +44,6 @@ class Cell:
         return self.organism
 
 
-
 if __name__ == "__main__":
-    cell = Cell(1, 2, "wall", 10)
+    cell = Cell(1, 2, "wall")
     print(cell)
