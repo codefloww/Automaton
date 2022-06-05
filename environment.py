@@ -10,9 +10,18 @@ class Environment:
         """
         self.width = width
         self.height = height
+
         self.size = width * height
-        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
+
+
+        self.light = False
+
+        self.grid = [
+            [Cell(x, y, cell_type, lighting) for y in range(height)]
+            for x in range(width)
+        ]
         self.killed_before = []
+        self.new_cells = []
 
     def __str__(self):
         """
@@ -74,6 +83,7 @@ class Environment:
         return organisms
 
     def run_authomatons(self):
+
         organsims = self.get_organisms()
         for organism in organsims:
             organism.make_move()
@@ -145,3 +155,4 @@ if __name__ == "__main__":
     for i in range(10):
         env.run_authomatons()
         print(env, "\n")
+

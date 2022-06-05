@@ -9,7 +9,7 @@ class Cell:
     y: int
     cell_type: str = "empty"
     light: int = 10
-    organism: 'Organism' = None
+    organism: "Automata" = None
 
     def __str__(self):
         # return f"({self.x}, {self.y}) - {self.cell_type}"
