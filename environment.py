@@ -110,7 +110,6 @@ class Environment:
         for row in self.grid:
             for cell in row:
                 states.append(cell.get_type())
-        return states
 
     def lighting(self, y):
         """
@@ -119,13 +118,6 @@ class Environment:
         """
         return (self.height-y)/self.height
 
-    def set_light(self, boolean):
-        """
-        change cell.light for every object in grid
-        """
-        for width in self.grid:
-            for item in width:
-                item.light = boolean
 
 if __name__ == "__main__":
     env = Environment(10, 10, "empty")
