@@ -2,10 +2,7 @@
 
 from math import sqrt, floor
 import random
-# import matplotlib.pyplot as plt
-
-from environment import Environment
-from cell import Cell
+from cell import Cell, Plant, Organism, Wall
 
 class Automata:
     def __init__(self, cell, env, genome = None) -> None:
@@ -21,12 +18,12 @@ class Automata:
 
     def __str__(self) -> str:
         return f"{self.get_genome()} - {self.x}, {self.y}"
-    
+
     def make_move(self):
         self._behavior_decider()
 
     def _abilities_decider(self) -> None:
-        abilities_namings = [self.see_ability, self.move_ability, self.kill_ability, self.eat_ability, self.photosynth_ability, self.hybernate_ability, self.reproduce_ability,self.produce_ability]
+        abilities_namings = [self.see_ability, self.move_ability, self.kill_ability, self.eat_ability, self.photosynth_ability, self.hybernate_ability, self.cross_ability, self.produce_ability]
         abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
         abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
@@ -43,7 +40,7 @@ class Automata:
     def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
 
-        def move_away(): # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід. 
+        def move_away(): # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід.
             self.cell.organism = None
             self.cell = self.env.get_cell(self.x, self.y)
             self.env.get_cell(self.x, self.y).organism = self
@@ -61,8 +58,8 @@ class Automata:
                         except IndexError:
                             pass
             return possible_moves
-        
-        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...] 
+
+        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...]
             ranges = []
             for i in track_list:
                 ranges.append([(cell, sqrt(abs(cell.x - i.x) + abs(cell.y - i.y))) for cell in possible_moves])
@@ -104,12 +101,11 @@ class Automata:
 
 # Логіка - у пріоритеті напад на когось. Відразу ж за нападом йде втеча від небезпечного автоматона (напад на слабкого все одно вважається пріоритетом).
 # Не бачимо ворогів узагалі? Йдемо до їжі. Якщо ж навколо узагалі нічого немає - мігруємо у випадковому напрямку на випадкову відстань.
-# По факту - логіка агресора, але можна легко поміняти і взагалі ввести типи клітин по агресивності.
         try :
             if len(pray_cells) > 0:
                 self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
                 move_away()
-                
+
             elif len(danger_cells) > 0:
                 self.x, self.y = (int(x) for x in escape(danger_cells).split(" "))
                 move_away()
@@ -141,7 +137,7 @@ class Automata:
         else :
             return False
 
-    def reproduce_ability(self, strength) -> None:
+    def cross_ability(self, strength) -> None:
         """changed to cross_ability"""
         nearest_cells = [x for x in self.env.get_neighbors(self.x, self.y) if x.organism != None]
         for cell in nearest_cells:
@@ -213,7 +209,7 @@ class Automata:
         if diff_energy < 5:
             return False
         number_of_child = 0
-        number_of_plants = 0
+        # number_of_plants = 0
         if strength <= 1:
             number_of_plants = diff_energy // 10
         elif strength == 2:
@@ -235,13 +231,14 @@ class Automata:
             if cell.cell_type != "empty":
                 continue
             if number_of_child != 0:
-                cell.cell_type = "organism"
+                # cell.cell_type = "organism"
+                cell = Organism(cell.x, cell.y, cell.light)
                 cell.organism = Automata(cell, self.env, self.genome)
                 number_of_child -= 1
                 self.energy -= 10
                 check = True
             if number_of_plants > 0:
-                self.env[cell.x][cell.y] = Cell(cell.x, cell.y, "plant")
+                self.env[cell.x][cell.y] = Plant(cell.x, cell.y, cell.light)
                 number_of_plants -= 1
                 check = True
             if number_of_plants == 0 and number_of_plants == 0:
@@ -279,33 +276,3 @@ class Automata:
         return self.age
     def get_energy(self) -> int:
         return self.energy
-
-if __name__ == "__main__":
-    # Змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
-    env = Environment(50, 50)
-    my_cell = env.get_cell(0, 0)
-    authomatas = []
-    autho_amount = []
-    for i in range(500):
-        _cell = Cell(random.randint(0, 49), random.randint(0, 49))
-        _cell.organism = Automata(_cell, env)
-        env.set_cell(_cell.x, _cell.y, _cell)
-        authomatas.append(_cell.organism)
-    for i in range(1) :
-        env.get_cell(random.randint(0, 49) ,random.randint(0, 49)).cell_type = "plant"
-    print(env)
-    for i in range(500):
-        for j in authomatas:
-            j.make_move()
-        print(env)
-        print()
-        autho_amount.append(env.get_authomaton_number())
-    
-    # plt.plot(list(range(500)), autho_amount)
-    
-    # plt.xlabel('Iterations')
-    # plt.ylabel('Authomatons count on the map')
-    
-    
-    # plt.show()
-
