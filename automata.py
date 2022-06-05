@@ -2,7 +2,7 @@
 
 from math import sqrt, floor
 import random
-from cell import Cell
+from cell import Cell, Plant, Organism, Wall
 
 class Automata:
     def __init__(self, cell, env, genome = None) -> None:
@@ -231,13 +231,14 @@ class Automata:
             if cell.cell_type != "empty":
                 continue
             if number_of_child != 0:
-                cell.cell_type = "organism"
+                # cell.cell_type = "organism"
+                cell = Organism(cell.x, cell.y, cell.light)
                 cell.organism = Automata(cell, self.env, self.genome)
                 number_of_child -= 1
                 self.energy -= 10
                 check = True
             if number_of_plants > 0:
-                self.env[cell.x][cell.y] = Cell(cell.x, cell.y, "plant")
+                self.env[cell.x][cell.y] = Plant(cell.x, cell.y, cell.light)
                 number_of_plants -= 1
                 check = True
             if number_of_plants == 0 and number_of_plants == 0:

@@ -311,6 +311,7 @@ class GUI:
             for row in self.environment.grid:
                 for cell in row:
                     if cell.cell_type != 'empty':
+                        # print(cell.cell_type, cell)
                         cell.draw(GUI.SCREEN)
 
             self.draw_button()
