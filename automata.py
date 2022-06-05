@@ -18,7 +18,16 @@ class Automata:
         return f"{self.get_genome()} - {self.x}, {self.y}"
 
     def _abilities_decider(self) -> dict:
-        abilities_namings = [self.see_ability, self.move_ability, self.eat_ability,  self.kill_ability,self.hybernate_ability, self.photosynth_ability, self.reproduce_ability,self.produce_ability]
+        abilities_namings = [
+                            self.see_ability,
+                            self.move_ability,
+                            self.eat_ability,
+                            self.kill_ability,
+                            self.hybernate_ability,
+                            self.photosynth_ability,
+                            self.reproduce_ability,
+                            self.produce_ability
+                            ]
         abilities_strength = list(map(lambda x: int(self.genome[x:x+2], 2), range(0, self.GENOME_SIZE*2, 2)))
         abilities = {abilities_namings[i]: abilities_strength[i] for i in range(len(abilities_namings))}
         return abilities
@@ -62,12 +71,29 @@ class Automata:
 
     def kill_ability(self, strength) -> None:
         """
-        strength:
-        '00' - can't kill
-        '01' -
-        '10' -
-        '11' -
+        can kill if other.kill_ability < strength
         """
+        if strength == 0:
+            return
+        else:
+            if self.see_ability > 0:
+                nearest_cells = self.env.get_neighbors(self.x, self.y, 1)
+            else:
+                nearest_cells = []
+            for cell in nearest_cells:
+                if cell.organism:
+                    if cell.organism.kill_ability == strength:
+                        kill_probability = random.randint(0,1)
+                    elif cell.organism.kill_ability < strength:
+                        kill_probability = 1
+                    else:
+                        kill_probability = -1
+                    if kill_probability == 1:
+                        self.env.killed_before.append(cell)
+                    if kill_probability != -1:
+                        break
+            else:
+                return
 
     def photosynth_ability(self, strength) -> None:
         pass

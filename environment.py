@@ -16,6 +16,7 @@ class Environment:
             [Cell(x, y, cell_type, lighting) for y in range(height)]
             for x in range(width)
         ]
+        self.killed_before = []
 
     def __str__(self):
         """
@@ -85,14 +86,14 @@ class Environment:
         """
         self.grid[x][y] = cell
 
-    def get_neighbors(self, x, y, see_dist = 1):
+    def get_neighbors(self, x, y, see_dist=1):
         """
         Gets the neighbors of a cell at the specified coordinates.
         """
         output = []
         for i in range(-see_dist, see_dist+1):
             for j in range(-see_dist, see_dist+1):
-                try :
+                try:
                     output.append(self.get_cell(x + i, y + j)) if \
                      (x+i, y+j) != (x, y) and x + i >= 0 and y + j >= 0 else 1
                 except IndexError:
