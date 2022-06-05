@@ -7,18 +7,26 @@ class Simulation:
         # 55, 42
         self.env = env or Environment(55, 42)
         self.gui = GUI(self.env)
-        self.generation = 0
+        self.generations = 1000
+        self.steps = 300
 
     def run(self):
-        self.gui.main()
-        # self.env.set_cell(i, 5, Cell(i, 5, 'organism')) for setting the cell
-        # here we need something to refresh the GUI
-        # like self.gui.refresh(self.env) or self.gui.update(self.env)
+        # # the first stage of gui in which we interact with the interface and setup env
+        # self.gui.setup()
+        # # the second stage of gui in which we run evolution(should start after pressing play in previous function)
+        # self.run_simulation()
+        
+        self.gui.main(self.generations, self.steps)
 
-    def run_simulation(self):
-        print(self.env)
-        for i in range(100):
-            print(i)
+    # def run_simulation(self):
+    #     # we have 1000 generations
+    #     for gen in range(1000):
+    #         for step in range(300):
+    #             self.run_step()
+    #             self.gui.run() # updates gui
+
+   
+        
 
 
 if __name__ == "__main__":

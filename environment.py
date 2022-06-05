@@ -1,21 +1,33 @@
 from cell import Cell
 
-
 class Environment:
     """
     An environment.
     """
 
-    def __init__(self, width, height, cell_type='empty'):
+
+    def __init__(self, width, height, cell_type="empty", lighting=None):
+
 
         """
         Initialize the environment.
         """
         self.width = width
         self.height = height
-        self.size = width * height
+
         self.light = False
-        self.grid = [[Cell(x, y, cell_type, self.light) for y in range(height)] for x in range(width)]
+        self.size = width * height
+
+        self.light = False
+      
+
+        self.grid = [
+            [Cell(x, y, cell_type, lighting) for y in range(height)]
+            for x in range(width)
+        ]
+        self.killed_before = []
+        self.new_cells = []
+
 
     def __str__(self):
         """
@@ -67,11 +79,25 @@ class Environment:
         """
         return self.grid[x][y]
 
-    def get_cells_pos(self, cell_type=None):
+
+    def get_organisms(self):
+        organisms = set()
+        for row in self.grid:
+            for cell in row:
+                if cell.get_type() == "organism":
+                    organisms.add(cell.organism)
+        return organisms
+
+    def run_step(self):
+        organsims = env.get_organisms()
+        for organism in organsims:
+            organism._behavior_decider()
+
+    def get_cells_pos(self, cell_type="empty"):
         """
         Return the positions of all cells of the specified type.
         """
-        cell_type = cell_type or "empty"
+        cell_type = cell_type
         cell_positions = []
         for row in self.grid:
             for cell in row:
@@ -85,8 +111,24 @@ class Environment:
         """
         self.grid[x][y] = cell
 
-    def get_neighbors(self, x, y):
-        pass
+
+    def get_neighbors(self, x, y, see_dist=1):
+        """
+        Gets the neighbors of a cell at the specified coordinates.
+        """
+        output = []
+
+        for i in range(-see_dist, see_dist+1):
+            for j in range(-see_dist, see_dist+1):
+                try:
+
+                    output.append(self.get_cell(x + i, y + j)) if \
+                     (x+i, y+j) != (x, y) and x + i >= 0 and y + j >= 0 else 1
+                except IndexError:
+                    pass
+        return output
+
+
 
     def get_environment_state(self):
         """
@@ -97,12 +139,14 @@ class Environment:
             for cell in row:
                 states.append(cell.get_type())
 
+        return states
+
     def lighting(self, y):
         """
         Return coefficient of external illumination
         0 <= coefficient <= 1
         """
-        return (self.height-y)/self.height
+        return (self.height - y) / self.height
 
     def set_light(self, boolean):
         """
@@ -114,6 +158,11 @@ class Environment:
 
 
 if __name__ == "__main__":
+    import automata
+
     env = Environment(10, 10, "empty")
     env[5][3] = Cell(5, 3, "wall")
-    print(env)
+    cell = env[5][3]
+
+    cell.organism = Automata(cell, env)
+    cell.organism.see_ability(2)

@@ -5,8 +5,9 @@ import time
 
 from cell import Cell
 from environment import Environment
+from automata import Automata
 
-possible_cells = ['organism', 'plant', 'wall', 'empty']
+possible_cells = ["organism", "plant", "wall", "empty"]
 
 # color palette
 SKY_BLUE = (135, 206, 235)
@@ -34,9 +35,11 @@ class Organism(Cell):
                            (x, y), Organism.radius)
 
 
+
 class Plant(Cell):
     color = (110, 212, 123)
     radius = 7
+
 
     def __init__(self, x, y,  light):
         super().__init__(x, y, possible_cells[1], light)
@@ -53,6 +56,7 @@ class Wall(Cell):
     size = (16, 16)
 
     def __init__(self, x, y, light):
+
         super().__init__(x, y, possible_cells[2], light)
 
     def draw(self):
@@ -60,6 +64,7 @@ class Wall(Cell):
         y = self.y * COEFF
         pygame.draw.rect(GUI.SCREEN, Wall.color,
                          (x, y, Wall.size[0], Wall.size[1]))
+
 
 
 class Button:
@@ -130,22 +135,34 @@ class GUI:
         """
 
         pygame.init()
-        pygame.display.set_caption('Evolution Game')
-        pygame.display.set_icon(pygame.image.load('images/evolution.png'))  # program image
+        pygame.display.set_caption("Evolution Game")
+        pygame.display.set_icon(
+            pygame.image.load("images/evolution.png")
+        )  # program image
         pygame.font.init()
 
         self.font = pygame.font.SysFont("arial.ttf", 25)
         self.menu_color = (30, 50, 50)
-        # self.menu_color = (51, 73, 68)
+
         self.display_image = Background("images/green_bg.png", [0, 0]).image
 
         # load button images
         self.light_button = Button(940, 50, "images/idea.png", "images/idea_on.png")
-        self.cell_button = Button(940, 140, "images/virus.png", "images/virus_on.png", "Cell")
-        self.wall_button = Button(940, 230, "images/wall.png", "images/wall_on.png", "Wall")
-        self.plant_button = Button(940, 320, "images/plant.png", "images/plant_on.png", "Plant")
-        self.erase_button = Button(940, 410, "images/eraser.png", "images/eraser_on.png")
-        self.play_button = Button(940, 500, "images/play-button.png", "images/video-pause-button.png")
+        self.cell_button = Button(
+            940, 140, "images/virus.png", "images/virus_on.png", "Cell"
+        )
+        self.wall_button = Button(
+            940, 230, "images/wall.png", "images/wall_on.png", "Wall"
+        )
+        self.plant_button = Button(
+            940, 320, "images/plant.png", "images/plant_on.png", "Plant"
+        )
+        self.erase_button = Button(
+            940, 410, "images/eraser.png", "images/eraser_on.png"
+        )
+        self.play_button = Button(
+            940, 500, "images/play-button.png", "images/video-pause-button.png"
+        )
         self.quit_button = Button(940, 590, "images/remove.png")
         self.button = None
         self.cur_spawning_button = None
@@ -153,8 +170,10 @@ class GUI:
         self.coeff = GUI.DISPLAY_X // environment.width
         self.environment = environment
         self.queue_cell = []
+
         self.start_time = 0
         self.time_evolution = 0
+
         self.erase = False
         self.play = False
         self.run = True
@@ -170,14 +189,17 @@ class GUI:
                     while not deleted:
                         if self.queue_cell:
                             for x, y in self.queue_cell.pop():
+
                                 if self.environment.get_cell(x, y).cell_type != 'empty':
                                     self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
+
                                     deleted = True
                         else:
                             deleted = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
+
                 x, y = x // self.coeff, y // self.coeff
 
                 if name_class == 'Cell':
@@ -201,6 +223,7 @@ class GUI:
                 if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                         self.environment.get_cell(x, y).cell_type != 'empty':
                     self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
+
 
     def button_navigate(self, button):
         self.button = button
@@ -236,6 +259,7 @@ class GUI:
         check (x, y) coordinates;
         add cells to the grid and queue if coordinates is correct;
         """
+
         if cell.cell_type == 'wall':
             if x*self.coeff+self.coeff < GUI.DISPLAY_X - GUI.MENU_SIZE or y*self.coeff <= GUI.DISPLAY_Y:
                 self.environment.set_cell(x, y, cell)
@@ -326,6 +350,7 @@ class GUI:
             (10, 10 + 25),
         )
 
+
     def main(self):
         """
         draw all objects that could be changed
@@ -333,6 +358,7 @@ class GUI:
         time_start = time.time()
         while self.run:
             GUI.SCREEN.blit(self.display_image, (0, 0))
+
 
             for row in self.environment.grid:
                 for cell in row:
@@ -349,11 +375,11 @@ class GUI:
 
             self.draw_text()
 
+
             pygame.display.update()
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     display = GUI(Environment(55, 42))
 
     display.main()
