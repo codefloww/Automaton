@@ -1,5 +1,6 @@
 from cell import Cell
 from automata import Automata
+
 class Environment:
     """
     An environment.
@@ -10,17 +11,11 @@ class Environment:
         """
         self.width = width
         self.height = height
-
         self.size = width * height
-
-
         self.light = False
-
-        self.grid = [
-            [Cell(x, y, cell_type, lighting) for y in range(height)]
-            for x in range(width)
-        ]
+        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
         self.killed_before = []
+
         self.new_cells = []
 
     def __str__(self):

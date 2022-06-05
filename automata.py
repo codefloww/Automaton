@@ -11,7 +11,7 @@ class Automata:
              x in range(2*self.GENOME_SIZE)]) if genome == None else genome
 
         self.age = 0
-        self.energy = 50
+        self.energy = 4
         self.cell = cell
         self.x = self.cell.x
         self.y = self.cell.y
@@ -22,6 +22,7 @@ class Automata:
     
     def make_move(self):
         self._behavior_decider()
+
 
     def make_move(self):
         self._behavior_decider()
@@ -48,11 +49,11 @@ class Automata:
             for i in range(len(abilities_namings))
         }
 
+
         return abilities
 
     def _behavior_decider(self) -> None:
         abilities = self._abilities_decider()
-        del abilities[self.see_ability]
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
@@ -63,6 +64,7 @@ class Automata:
 
     def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
+
 
 
         def move_away():  # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід.
@@ -89,7 +91,6 @@ class Automata:
             ranges = []
             for i in track_list:
                 ranges.append([(cell, sqrt(abs(cell.x - i.x) + abs(cell.y - i.y))) for cell in possible_moves])
-
             possible_move_dict = {}
             for i in ranges:
                 for j in i:
@@ -304,13 +305,16 @@ class Automata:
             other.genome[0:crossing] + self.genome[crossing:],
         )
 
+
         return self, other
 
-    def get_genome(self) -> str:
+    def get_genome(self) -> list:
         return self.genome
+
 
     def get_health(self) -> int:
         return self.health
+
 
     def get_age(self) -> int:
         return self.age
@@ -338,4 +342,5 @@ if __name__ == "__main__":
         print(env)
         print()
     print(env.killed_before)
+
 
