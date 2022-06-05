@@ -1,7 +1,7 @@
 """module for discrete evolving automata"""
 import random
 
-from math import sqrt
+from math import sqrt, floor
 import random
 from environment import Environment
 from cell import Cell
@@ -38,6 +38,7 @@ class Automata:
 
     def _behavior_decider(self)->None:
         abilities = self._abilities_decider()
+        del abilities[self.see_ability]
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
@@ -52,6 +53,7 @@ class Automata:
             self.cell.organism = None
             self.cell = self.env.get_cell(self.x, self.y)
             self.env.get_cell(self.x, self.y).organism = self
+            self.energy -= 1
 
         def get_possible_moves():
             possible_moves = []
@@ -59,11 +61,14 @@ class Automata:
             for i in range(-strength, strength+1):
                 for j in range(-strength, strength+1):
                     if abs(i) + abs(j) <= strength and self.x + i >= 0 and self.y + j >= 0:
-                        possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
+                        try :
+                            possible_moves.append(self.env.get_cell(self.x+i, self.y+j)) if\
                              self.env.get_cell(self.x+i, self.y+j).organism == None else 1
+                        except IndexError:
+                            pass
             return possible_moves
-
-        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...]
+        
+        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...] 
             ranges = []
             for i in track_list:
                 ranges.append([(cell, sqrt(abs(cell.x - i.x) + abs(cell.y - i.y))) for cell in possible_moves])
@@ -75,12 +80,12 @@ class Automata:
                     possible_move_dict[f"{j[0].x} {j[0].y}"].append(j[1])
             return possible_move_dict
 
-        def escape(danger_cells): # визначає найкращі за векторним добутком координати для втечі і повертає їх у формі ("x", "y")
+        def escape(danger_cells): # визначає найкращі за векторним добутком координати для ВТЕЧІ і повертає їх у формі ("x", "y")
             possible_moves = get_possible_moves()
             possible_move_dict = get_all_ranges(possible_moves, danger_cells)
             return max(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
 
-        def move_towards(pray_cells): # визначає найкращі за векторним добутком координати для погоні і повертає їх у формі ("x", "y")
+        def move_towards(pray_cells): # визначає найкращі за векторним добутком координати для ПОГОНІ і повертає їх у формі ("x", "y")
             possible_moves = get_possible_moves()
             possible_move_dict = get_all_ranges(possible_moves, pray_cells)
             return min(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
@@ -102,28 +107,32 @@ class Automata:
         if len(pray_cells) > 0:
             self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
 
         elif len(danger_cells) > 0:
-            self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
+            self.x, self.y = (int(x) for x in escape(danger_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
 
         elif len(food_cells) > 0:
-            self.x, self.y = (int(x) for x in escape(pray_cells).split(" "))
+            self.x, self.y = (int(x) for x in move_towards(food_cells).split(" "))
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+
         else :
             cell_to_migrate = random.choice(get_possible_moves())
             self.x, self.y = cell_to_migrate.x, cell_to_migrate.y
             move_away()
-            print(self.x, self.y, self.env.get_cell(self.x, self.y).organism)
+
 
     def see_ability(self, strength) -> None:
         return self.env.get_neighbors(self.x, self.y, strength)
 
-    def eat_ability(self, strength) -> None:
-        pass
+    def eat_ability(self, strength) -> None:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
+        to_eat = [x for x in self.see_ability(1) if x.cell_type == "plant"]
+        to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
+        if len(to_eat) > 0:
+            random.choice(to_eat).cell_type = "empty"
+            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
+        else :
+            raise Exception("No food around but eat_ability() casted.")
 
     def reproduce_ability(self, strength) -> None:
         pass
@@ -158,13 +167,16 @@ class Automata:
                 return
 
     def photosynth_ability(self, strength) -> None:
-        pass
+        self.energy += floor(strength*1.5) if self.energy + floor(strength*1.5) <= 50 else 50 - self.energy
 
     def produce_ability(self, strength) -> None:
-        self
+        pass
 
     def hybernate_ability(self, strength) -> None:
-        self.energy += strength if self.energy + strength <= 10 else 10 - self.energy
+        if random.randint(0, 100) > strength*10 :
+            self.photosynth_ability(self._abilities_deciderself[self.photosynth_ability])
+        else:
+            self.energy += strength if self.energy + strength <= 50 else 50 - self.energy
 
     def mutate(self) -> None:
         mutation_position = random.randint(0, self.GENOME_SIZE)
@@ -191,23 +203,28 @@ class Automata:
     def get_energy(self) -> int:
         return self.energy
 
-    def get_age(self) -> int:
-        return self.age
-
-    def get_energy(self) -> int:
-        return self.energy
-
 # if __name__ == "__main__":
-#     # може рейзитись TypeError бо ще не готова функція руху до цілі. Це стається бо в зоні досяжності зору нема від кого тікати. Якщо рейзиться - просто запустіть заново.
+#     # тупо тест щоб побачити як чечік біжить до рослинки і їсть її. Між іншим, я змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
 #     env = Environment(10, 10)
 #     my_cell = env.get_cell(0, 0)
-#     for i in range(10):
-#         enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
-#         enemy_cell.organism = Automata(enemy_cell, env)
-#         env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+#     authomatas = []
+#     # for i in range(random.randint(0, 10)):
+#     #     enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
+#     #     enemy_cell.organism = Automata(enemy_cell, env)
+#     #     env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+#     #     authomatas.append(enemy_cell.organism)
+#     # enemy_cell = Cell(3, 3)
+#     # enemy_cell.organism = Automata(enemy_cell, env)
+#     # env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
 #     my_cell.organism = Automata(my_cell, env)
 #     my_man = my_cell.organism
+#     env.get_cell(1, 3).cell_type = "plant"
+#     print(env)
+#     print()
 #     my_man.move_ability(4)
+#     my_man.eat_ability(4)
+#     for i in authomatas:
+#         i.move_ability(4)
 #     print(env)
 
 
