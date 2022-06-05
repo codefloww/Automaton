@@ -124,7 +124,6 @@ class GUI:
     MENU_SIZE = 80
     SCREEN = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 
-
     def __init__(self, environment):
         """
         initialisation of the display, started color theme, buttons
@@ -157,7 +156,6 @@ class GUI:
         self.erase = False
         self.run = True
 
-
     def spawn_cell(self, name_class):
         """
         user can spawn or erase(/Сtrl+Z) сells
@@ -180,8 +178,10 @@ class GUI:
                 x, y = x // self.coeff, y // self.coeff
 
                 if self.erase:
+                    print('try to erase')
                     if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                             self.environment.get_cell(x, y).cell_type != 'empty':
+                        print('change')
                         self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
                 elif name_class == 'Cell':
                     self.add_cell(x, y, Organism(x, y, self.environment.light))
@@ -195,7 +195,6 @@ class GUI:
                             self.add_cell(x_c, y_c, Wall(x_c, y_c, self.environment.light), [16, i, j])
             if event.type == pygame.QUIT:  # if press close button
                 self.run = False
-
 
     def button_navigate(self, button):
         self.button = button
@@ -244,6 +243,70 @@ class GUI:
                     return True
         return False
 
+    def setup(self):
+        self.environment = self.environment
+
+    def draw_button(self):
+        pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
+        if self.light_button.is_on and self.light_button.draw(GUI.SCREEN):
+            self.light_button.turn_off()
+            self.change_light()
+        if self.light_button.draw(GUI.SCREEN):
+            self.light_button.turn_on()
+            self.change_light()
+
+        # Cell button
+        self.button_navigate(self.cell_button)
+
+        # Plant button
+        self.button_navigate(self.plant_button)
+
+        # Wall button
+        self.button_navigate(self.wall_button)
+
+        # Play button
+        if self.play_button.is_on and self.play_button.draw(GUI.SCREEN):
+            self.play_button.turn_off()
+        if self.play_button.draw(GUI.SCREEN):
+            self.play_button.turn_on()
+
+        # Erase button
+        if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
+            self.erase = False
+            print('erase button off')
+            self.erase_button.turn_off()
+        if self.erase_button.draw(GUI.SCREEN):
+            self.erase = True
+            print('erase button on')
+            self.erase_button.turn_on()
+
+        # Erase button
+        if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
+            self.erase = False
+            self.erase_button.turn_off()
+        if self.erase_button.draw(GUI.SCREEN):
+            self.erase = True
+            self.erase_button.turn_on()
+
+        # Quit button
+        if self.quit_button.draw(GUI.SCREEN):
+            self.run = False
+
+    def draw_text(self, time_start):
+        clock.tick(FPS)
+
+        GUI.SCREEN.blit(
+            self.font.render("Generation X", False, (10, 20, 10)), (10, 10)
+        )
+        GUI.SCREEN.blit(
+            self.font.render(
+                f"Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}",
+                False,
+                (10, 20, 10),
+            ),
+            (10, 10 + 25),
+        )
+
     def main(self):
         """
         draw all objects that could be changed
@@ -252,65 +315,19 @@ class GUI:
         while self.run:
             GUI.SCREEN.blit(self.display_image, (0, 0))
 
-            for width in self.environment.grid:
-                for cell in width:
+            for row in self.environment.grid:
+                for cell in row:
                     if cell.cell_type != 'empty':
                         cell.draw()
-            pygame.draw.rect(GUI.SCREEN, self.menu_color, pygame.Rect(GUI.DISPLAY_X - GUI.MENU_SIZE, 0, 100, 700))
 
-            if self.light_button.is_on and self.light_button.draw(GUI.SCREEN):
-                self.light_button.turn_off()
-                self.change_light()
-            if self.light_button.draw(GUI.SCREEN):
-                self.light_button.turn_on()
-                self.change_light()
-            
-            # Cell button
-            self.button_navigate(self.cell_button)
-
-            # Plant button
-            self.button_navigate(self.plant_button)
-
-            # Wall button
-            self.button_navigate(self.wall_button)
-
-            # Play button
-            if self.play_button.is_on and self.play_button.draw(GUI.SCREEN):
-                self.play_button.turn_off()
-            if self.play_button.draw(GUI.SCREEN):
-                self.play_button.turn_on()
-
-            # Erase button
-            if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
-                self.erase = False
-                self.erase_button.turn_off()
-            if self.erase_button.draw(GUI.SCREEN):
-                self.erase = True
-                self.erase_button.turn_on()
-
-            # Erase button
-            if self.erase_button.is_on and self.erase_button.draw(GUI.SCREEN):
-                self.erase = False
-                self.erase_button.turn_off()
-            if self.erase_button.draw(GUI.SCREEN):
-                self.erase = True
-                self.erase_button.turn_on()
-
-            # Quit button
-            if self.quit_button.draw(GUI.SCREEN):
-                self.run = False
+            self.draw_button()
+            self.setup()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # if press close button
                     self.run = False
 
-            clock.tick(FPS)
-
-
-            GUI.SCREEN.blit(self.font.render('Generation X', False, (10, 20, 10)), (10, 10))
-            GUI.SCREEN.blit(
-                self.font.render(f'Time: {str(datetime.timedelta(seconds=round(time.time() - time_start)))}',
-                                 False, (10, 20, 10)), (10, 10 + 25))
+            self.draw_text(time_start)
 
             pygame.display.update()
 
