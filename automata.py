@@ -1,9 +1,10 @@
 """module for discrete evolving automata"""
 
+"""module for discrete evolving automata"""
+
 from math import sqrt, floor
 import random
 from cell import Cell, Plant, Organism, Wall
-
 class Automata:
     def __init__(self, cell, env, genome = None) -> None:
         self.GENOME_SIZE = 8
@@ -40,10 +41,11 @@ class Automata:
     def move_ability(self, strength) -> None:
         surr = self.see_ability(self._abilities_decider()[self.see_ability])
 
-        def move_away(): # змушує автомат лівнути зі своєї клітинки і перейти в іншу, і, відповідно, глобально змінює грід.
-            self.cell.organism = None
+        def move_away():
+            self.env[self.cell.x][self.cell.y] = Cell(self.x, self.y, 'empty', self.cell.light)
             self.cell = self.env.get_cell(self.x, self.y)
-            self.env.get_cell(self.x, self.y).organism = self
+            self.env[self.x][self.y]= Organism(self.x, self.y, self.cell.light)
+            self.env[self.x][self.y].set_organism(self)
             self.energy -= 1
 
         def get_possible_moves():
@@ -131,7 +133,8 @@ class Automata:
         to_eat = [x for x in self.see_ability(1) if x.cell_type == "plant"]
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
-            random.choice(to_eat).cell_type = "empty"
+            eaten_plant = random.choice(to_eat)
+            eaten_plant = Cell(eaten_plant.x, eaten_plant.y, 'empty', eaten_plant.light)
             self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
             return True
         else :
@@ -141,8 +144,6 @@ class Automata:
         """changed to cross_ability"""
         nearest_cells = [x for x in self.env.get_neighbors(self.x, self.y) if x.organism != None]
         for cell in nearest_cells:
-            if cell.cell_type != "organism":
-                continue
             if strength == 0:
                 if abs(self.x-cell.x) == 1 and abs(self.y-cell.y) == 1:
                     chosen_cell = cell
@@ -163,10 +164,8 @@ class Automata:
         self.energy -= 20
         return True
 
+
     def kill_ability(self, strength) -> None:
-        """
-        can kill if other.kill_ability < strength
-        """
         """
         can kill if other.kill_ability < strength
         """
@@ -189,10 +188,9 @@ class Automata:
                     else:
                         kill_probability = -1
                     if kill_probability == 1:
-                        self.env.killed_before.append(enemy)
                         self.energy += 20 if self.energy <= 30 else 50-self.energy
 
-                        enemy.cell.organism = None
+                        cell = Cell(self.x, self.y, 'empty', self.cell.light)
                         return True
                     elif kill_probability == 0:
                         return True
@@ -231,7 +229,6 @@ class Automata:
             if cell.cell_type != "empty":
                 continue
             if number_of_child != 0:
-                # cell.cell_type = "organism"
                 cell = Organism(cell.x, cell.y, cell.light)
                 cell.organism = Automata(cell, self.env, self.genome)
                 number_of_child -= 1
