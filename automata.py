@@ -152,7 +152,7 @@ class Automata:
     def see_ability(self, strength) -> list:
         return self.env.get_neighbors(self.x, self.y, strength)
 
-    def eat_ability(self, strength) -> None:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
+    def eat_ability(self, strength) -> bool:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
         to_eat = [x for x in self.see_ability(1) if x.cell_type == "plant"]
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
@@ -162,9 +162,32 @@ class Automata:
             return True
         else :
             return False
+
     def reproduce_ability(self, strength) -> bool:
         """changed to cross_ability"""
-        return False
+        nearest_cells = self.env.get_neighbors(self.x, self.y)
+        for cell in nearest_cells:
+            if cell.cell_type != "organism":
+                continue
+            if strength == 0:
+                if abs(self.x-cell.x) == 1 and abs(self.y-cell.y) == 1:
+                    chosen_cell = cell
+                    break
+            elif strength == 1:
+                if (self.x-cell.x) == 0 or (self.y-cell.y) == 0:
+                    chosen_cell = cell
+                    break
+            else:
+                chosen_cell = cell
+                break
+        else:
+            return False
+        self.genome = self.crossover(self, chosen_cell.organism)
+        if_mutate = random.choice([0, 1, 2])
+        if if_mutate == 0:
+            self.mutate()
+        self.energy -= 20
+        return True
 
     def kill_ability(self, strength) -> bool:
         """
@@ -234,7 +257,7 @@ class Automata:
                 cell.cell_type = "organism"
                 cell.organism = Automata(cell, self.env, self.genome)
                 number_of_child -= 1
-                self.energy -= 10
+                self.energy -= 20
                 check = True
             if number_of_plants > 0:
                 self.env.grid[cell.x][cell.y](Cell(cell.x, cell.y, "plant"))
@@ -261,19 +284,18 @@ class Automata:
         mutation_position = random.randint(0, self.GENOME_SIZE)
         self.genome = self.genome[:mutation_position] + str(int(self.genome[mutation_position])^1) + self.genome[mutation_position+1:]
 
-    def crossover(self, other) -> None:
+    def crossover(self, other) -> str:
         if not isinstance(other, Automata):
             raise TypeError("other must be an Automata")
         if self.GENOME_SIZE != other.GENOME_SIZE:
             raise ValueError("other must have the same genome size")
         crossing = random.randint(0, self.GENOME_SIZE)
 
-        self.genome, other.genome = (
-            self.genome[0:crossing] + other.genome[crossing:],
-            other.genome[0:crossing] + self.genome[crossing:],
+        genome = random.choice(
+            [self.genome[0:crossing] + other.genome[crossing:], other.genome[0:crossing] + self.genome[crossing:]]
         )
 
-        return self, other
+        return genome
 
     def get_genome(self) -> str:
         return self.genome
