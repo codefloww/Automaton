@@ -10,8 +10,8 @@ class Cell:
 
     x: int
     y: int
-    light: bool = False
     cell_type: str = "empty"
+    light: bool = False
     organism: 'Organism' = None
 
     def __str__(self):

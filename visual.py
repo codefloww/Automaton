@@ -14,6 +14,7 @@ YELLOW = (245, 236, 142)
 GREEN = (110, 212, 123)
 PURPLE = (150, 110, 212)
 RED = (247, 129, 134)
+COEFF = 17
 FPS = 60
 clock = pygame.time.Clock()
 
@@ -23,7 +24,7 @@ class Organism(Cell):
 
     def __init__(self, x, y,  light):
         colors = [YELLOW, RED, PURPLE]
-        super().__init__(x, y, light, possible_cells[0])
+        super().__init__(x, y, possible_cells[0], light)
         self.color = random.choice(colors)
 
     def draw(self):
@@ -36,7 +37,7 @@ class Plant(Cell):
     radius = 7
 
     def __init__(self, x, y,  light):
-        super().__init__(x, y, light, possible_cells[1])
+        super().__init__(x, y, possible_cells[1], light)
 
     def draw(self):
         pygame.draw.circle(GUI.SCREEN, Plant.color,
@@ -48,7 +49,7 @@ class Wall(Cell):
     size = (16, 16)
 
     def __init__(self, x, y, light):
-        super().__init__(x, y, light, possible_cells[2])
+        super().__init__(x, y, possible_cells[2], light)
 
     def draw(self):
         pygame.draw.rect(GUI.SCREEN, Wall.color,
@@ -159,7 +160,7 @@ class GUI:
                         if self.queue_cell:
                             for x, y in self.queue_cell.pop():
                                 if self.environment.get_cell(x, y).cell_type != 'empty':
-                                    self.environment.set_cell(x, y, Cell(x, y, self.environment.light))
+                                    self.environment.set_cell(x, y, Cell(x, y, 'empty', self.environment.light))
                                     deleted = True
                         else:
                             deleted = True
@@ -170,7 +171,7 @@ class GUI:
                 if self.erase:
                     if x < GUI.DISPLAY_X - GUI.MENU_SIZE and y < GUI.DISPLAY_Y and \
                             self.environment.get_cell(x // self.coeff, y // self.coeff).cell_type != 'empty':
-                        self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y, self.environment.light))
+                        self.environment.set_cell(x // self.coeff, y // self.coeff, Cell(x, y, 'empty', self.environment.light))
                 elif name_class == 'Cell':
                     x = (x // self.coeff) * self.coeff + self.coeff // 2
                     y = (y // self.coeff) * self.coeff + self.coeff // 2
@@ -284,6 +285,7 @@ class GUI:
                     self.run = False
 
             clock.tick(FPS)
+
 
             GUI.SCREEN.blit(self.font.render('Generation X', False, (10, 20, 10)), (10, 10))
             GUI.SCREEN.blit(

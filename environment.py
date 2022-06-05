@@ -15,7 +15,7 @@ class Environment:
         self.height = height
         self.size = width * height
         self.light = False
-        self.grid = [[Cell(x, y, self.light, cell_type) for y in range(height)] for x in range(width)]
+        self.grid = [[Cell(x, y, cell_type, self.light) for y in range(height)] for x in range(width)]
 
     def __str__(self):
         """
