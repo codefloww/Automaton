@@ -4,6 +4,7 @@ import time
 
 from cell import Cell, Plant, Organism, Wall
 from environment import Environment
+from automata import Automata
 
 
 possible_cells = ['organism', 'plant', 'wall', 'empty']
@@ -298,11 +299,13 @@ class GUI:
         if self.quit_button.draw(GUI.SCREEN):
             self.run = False
 
-    def draw_text(self):
+    def draw_text(self, generation):
         clock.tick(FPS)
 
         GUI.SCREEN.blit(
-            self.font.render("Generation X", False, (10, 20, 10)), (10, 10)
+
+            self.font.render(f"Generation {generation - self.generations}", False, (10, 20, 10)), (10, 10)
+
         )
 
         if self.play:
@@ -331,6 +334,7 @@ class GUI:
                 for cell in row:
 
                     if cell.cell_type != 'empty':
+
                         cell.draw(GUI.SCREEN)
 
             self.draw_button()
@@ -350,7 +354,7 @@ class GUI:
                 if event.type == pygame.QUIT:  # if press close button
                     self.run = False
 
-            self.draw_text()
+            self.draw_text(generations)
 
             pygame.display.update()
 

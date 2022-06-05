@@ -2,14 +2,13 @@
 
 from math import sqrt, floor
 import random
-from cell import Cell
+from cell import Cell, Plant, Organism, Wall
 
 class Automata:
     def __init__(self, cell, env, genome = None) -> None:
         self.GENOME_SIZE = 8
         self.genome = "".join([random.choice(["0", "1"]) for\
              x in range(2*self.GENOME_SIZE)]) if genome == None else genome
-
         self.age = 0
         self.energy = 4
         self.cell = cell
@@ -19,15 +18,13 @@ class Automata:
 
     def __str__(self) -> str:
         return f"{self.get_genome()} - {self.x}, {self.y}"
-    
-    def make_move(self):
-        self._behavior_decider()
 
 
     def make_move(self):
         self._behavior_decider()
 
     def _abilities_decider(self) -> None:
+
         abilities_namings = [
             self.see_ability,
             self.move_ability,
@@ -57,9 +54,8 @@ class Automata:
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
-
-                completed_action = ability(abilities[ability], self.env)
-            if completed_action:
+                completed_action = ability(abilities[ability])
+            if completed_action == True:
                 break
 
     def move_ability(self, strength) -> None:
@@ -76,7 +72,6 @@ class Automata:
         def get_possible_moves():
             possible_moves = []
             # розраховує всі можливі рухи для автомата. Можливим рухом вважають такий, який може привести нас на пустий селл до якого ми можемо дійти за один хід.
-
             for i in range(-strength, strength+1):
                 for j in range(-strength, strength+1):
                     if abs(i) + abs(j) <= strength and self.x + i >= 0 and self.y + j >= 0:
@@ -86,8 +81,8 @@ class Automata:
                         except IndexError:
                             pass
             return possible_moves
-        
-        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...] 
+
+        def get_all_ranges(possible_moves, track_list): # розраховує відстань до кожного об'єкту зі списку track_list, яка буде між автоматом і об'єктом якщо він переміститься на якийсь з можливих селлів. Формат аутпуту функції : "x_possible_to_go y_possible_to_go" : [(Cell(x_possible_to_go, y_possible_to_go), range_to_an object1), ...]
             ranges = []
             for i in track_list:
                 ranges.append([(cell, sqrt(abs(cell.x - i.x) + abs(cell.y - i.y))) for cell in possible_moves])
@@ -97,7 +92,6 @@ class Automata:
                     if f"{j[0].x} {j[0].y}" not in possible_move_dict:
                         possible_move_dict[f"{j[0].x} {j[0].y}"] = []
                     possible_move_dict[f"{j[0].x} {j[0].y}"].append(j[1])
-
             return possible_move_dict
 
         def escape(danger_cells): # визначає найкращі за векторним добутком координати для ВТЕЧІ і повертає їх у формі ("x", "y")
@@ -113,7 +107,6 @@ class Automata:
             possible_move_dict = get_all_ranges(possible_moves, pray_cells)
             try :
                 return min(possible_move_dict.items(), key = lambda x:sum(possible_move_dict[x[0]]))[0]
-
             except ValueError:
                 pass
 
@@ -129,14 +122,12 @@ class Automata:
         food_cells = look_for_food()
 
 
-
 # Логіка - у пріоритеті напад на когось. Відразу ж за нападом йде втеча від небезпечного автоматона (напад на слабкого все одно вважається пріоритетом).
 # Не бачимо ворогів узагалі? Йдемо до їжі. Якщо ж навколо узагалі нічого немає - мігруємо у випадковому напрямку на випадкову відстань.
         try :
             if len(pray_cells) > 0:
                 self.x, self.y = (int(x) for x in move_towards(pray_cells).split(" "))
                 move_away()
-                
 
             elif len(danger_cells) > 0:
                 self.x, self.y = (int(x) for x in escape(danger_cells).split(" "))
@@ -160,7 +151,6 @@ class Automata:
         return self.env.get_neighbors(self.x, self.y, strength)
 
     def eat_ability(self, strength) -> None:# їсть якщо стоїть на клітинці з їжею або їжа є на сусідніх клітинках. cell_type клітинки змінюється на "empty" і автомату додається енергія.
-
         to_eat = [x for x in self.see_ability(1) if x.cell_type == "plant"]
         to_eat.append(self.cell) if self.cell.cell_type == "plant" else 1
         if len(to_eat) > 0:
@@ -264,13 +254,14 @@ class Automata:
             if cell.cell_type != "empty":
                 continue
             if number_of_child != 0:
-                cell.cell_type = "organism"
+                # cell.cell_type = "organism"
+                cell = Organism(cell.x, cell.y, cell.light)
                 cell.organism = Automata(cell, self.env, self.genome)
                 number_of_child -= 1
                 self.energy -= 10
                 check = True
             if number_of_plants > 0:
-                self.env[cell.x][cell.y] = Cell(cell.x, cell.y, "plant")
+                self.env[cell.x][cell.y] = Plant(cell.x, cell.y, cell.light)
                 number_of_plants -= 1
                 check = True
             if number_of_plants == 0 and number_of_plants == 0:
@@ -287,7 +278,6 @@ class Automata:
             return True
         return False
 
-
     def mutate(self) -> None:
         mutation_position = random.randint(0, self.GENOME_SIZE)
         self.genome = self.genome[:mutation_position] + str(int(self.genome[mutation_position])^1) + self.genome[mutation_position+1:]
@@ -298,6 +288,7 @@ class Automata:
         if self.GENOME_SIZE != other.GENOME_SIZE:
             raise ValueError("other must have the same genome size")
         crossing = random.randint(0, self.GENOME_SIZE)
+
 
 
         self.genome, other.genome = (
@@ -311,17 +302,14 @@ class Automata:
     def get_genome(self) -> list:
         return self.genome
 
-
     def get_health(self) -> int:
         return self.health
 
-
     def get_age(self) -> int:
         return self.age
+      
     def get_energy(self) -> int:
         return self.energy
-
-
 if __name__ == "__main__":
     # Змінив метод __str__ класу Cell на оцей рядок : return "M" if self.organism != None else "_" для кращих результатів.
     env = Environment(10, 10)
@@ -342,5 +330,4 @@ if __name__ == "__main__":
         print(env)
         print()
     print(env.killed_before)
-
 
