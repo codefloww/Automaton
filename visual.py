@@ -4,7 +4,7 @@ import time
 
 from cell import Cell, Plant, Organism, Wall
 from environment import Environment
-
+from automata import Automata
 
 possible_cells = ['organism', 'plant', 'wall', 'empty']
 
