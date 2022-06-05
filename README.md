@@ -27,12 +27,13 @@ sim = Simulation()
 sim.run()
 ```
 You will see a window that looks like this  
-![image](https://user-images.githubusercontent.com/90351072/172068831-82bdd030-a719-48ad-a551-c3db273bf288.png)
+![image](https://user-images.githubusercontent.com/90351072/172068831-82bdd030-a719-48ad-a551-c3db273bf288.png)  
 Here you can click on light bulb to turn on light in the environment:  
-![image](https://user-images.githubusercontent.com/90351072/172068706-4564ae58-13dd-44d4-ae37-43eeb87eeabf.png)
+![image](https://user-images.githubusercontent.com/90351072/172068706-4564ae58-13dd-44d4-ae37-43eeb87eeabf.png)  
 You can also choose different instances to place in environment, erase them, go back via Ctrl-Z.  
-<img width="640" alt="image" src="https://user-images.githubusercontent.com/90351072/172069046-ae76a72a-3278-4aba-a960-abd9d2fd323c.png">
+<img width="640" alt="image" src="https://user-images.githubusercontent.com/90351072/172069046-ae76a72a-3278-4aba-a960-abd9d2fd323c.png">  
 After that you press Play button to run simulation:  
+![](https:/github.com/codefloww/images/example)
 
 Every simulation may be different from each other because of the mutations and crossover.)
 
