@@ -12,7 +12,7 @@ class Automata:
         self.genome = '1'*(2*self.GENOME_SIZE)
         # self.health = 10
         self.age = 0
-        self.energy = 4
+        self.energy = 50
         self.cell = cell
         self.x = self.cell.x
         self.y = self.cell.y
@@ -109,7 +109,7 @@ class Automata:
         """
         can kill if other.kill_ability < strength
         """
-        if strength == 0:
+        if strength == 0 or self.energy < 10:
             return
         else:
             if self.see_ability > 0:
@@ -128,7 +128,7 @@ class Automata:
                         kill_probability = -1
                     if kill_probability == 1:
                         self.env.killed_before.append(cell)
-                        self.energy += 20
+                        self.energy += 20 if self.energy <= 30 else 50-self.energy
                     if kill_probability != -1:
                         break
             else:
@@ -174,17 +174,17 @@ class Automata:
     def get_energy(self) -> int:
         return self.energy
 
-if __name__ == "__main__":
-    # може рейзитись TypeError бо ще не готова функція руху до цілі. Це стається бо в зоні досяжності зору нема від кого тікати. Якщо рейзиться - просто запустіть заново.
-    env = Environment(10, 10)
-    my_cell = env.get_cell(0, 0)
-    for i in range(10):
-        enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
-        enemy_cell.organism = Automata(enemy_cell, env)
-        env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
-    my_cell.organism = Automata(my_cell, env)
-    my_man = my_cell.organism
-    my_man.move_ability(4)
-    print(env)
+# if __name__ == "__main__":
+#     # може рейзитись TypeError бо ще не готова функція руху до цілі. Це стається бо в зоні досяжності зору нема від кого тікати. Якщо рейзиться - просто запустіть заново.
+#     env = Environment(10, 10)
+#     my_cell = env.get_cell(0, 0)
+#     for i in range(10):
+#         enemy_cell = Cell(random.randint(0, 8), random.randint(0, 8))
+#         enemy_cell.organism = Automata(enemy_cell, env)
+#         env.set_cell(enemy_cell.x, enemy_cell.y, enemy_cell)
+#     my_cell.organism = Automata(my_cell, env)
+#     my_man = my_cell.organism
+#     my_man.move_ability(4)
+#     print(env)
 
 
