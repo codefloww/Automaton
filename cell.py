@@ -14,6 +14,7 @@ class Cell:
     cell_type: str = "empty"
     organism: 'Organism' = None
 
+
     def __str__(self):
         return f"({self.x}, {self.y}) - {self.cell_type}"
 
