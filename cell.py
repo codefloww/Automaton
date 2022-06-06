@@ -65,16 +65,18 @@ class Organism(Cell):
         if self.organism is None:
             return random.choice(colors)
         abilities = self.organism._abilities_decider()
-        if abilities[self.organism.kill_ability] >= 2:
+        if abilities[self.organism.photosynth_ability] >= 2:
+            return (0, 200, 45) # green
+        elif abilities[self.organism.kill_ability] >= 2:
             return (247, 129, 134) # red
         elif abilities[self.organism.eat_ability] >= 2:
             return (245, 236, 142) # yellow
-        elif abilities[self.organism.photosynth_ability] >= 2:
-            return (110, 212, 123) # green
         elif abilities[self.organism.produce_ability] >= 2:
             return (150, 110, 212) # purple
         else:
             return (120, 120, 120) # grey
+        # return abilities[self.organism.kill_ability]*64, abilities[self.organism.photosynth_ability]*80, abilities[self.organism.eat_ability]*71
+
 
 
 
