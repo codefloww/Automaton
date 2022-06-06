@@ -68,7 +68,25 @@ class Organism(Cell):
     def draw(self, screen):
         x = self.x * COEFF + COEFF // 2
         y = self.y * COEFF + COEFF // 2
-        pygame.draw.circle(screen, self.color, (x, y), Organism.radius)
+        self.color = self.set_color()
+        pygame.draw.circle(screen, self.color,
+                           (x, y), Organism.radius)
+
+    def set_color(self):
+        colors = [(245, 236, 142), (247, 129, 134), (150, 110, 212)]
+        if self.organism is None:
+            return random.choice(colors)
+        abilities = self.organism._abilities_decider()
+        if abilities[self.organism.kill_ability] >= 2:
+            return (247, 129, 134)  # red
+        elif abilities[self.organism.eat_ability] >= 2:
+            return (245, 236, 142)  # yellow
+        elif abilities[self.organism.photosynth_ability] >= 2:
+            return (110, 212, 123)  # green
+        elif abilities[self.organism.produce_ability] >= 2:
+            return (150, 110, 212)  # purple
+        else:
+            return (120, 120, 120)  # grey
 
 
 class Plant(Cell):

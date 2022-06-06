@@ -18,9 +18,6 @@ class Environment:
             [Cell(x, y, cell_type, lighting) for y in range(height)]
             for x in range(width)
         ]
-        self.killed_before = []
-
-        self.new_cells = []
 
     def __str__(self):
         """
