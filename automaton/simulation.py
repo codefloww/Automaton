@@ -3,7 +3,7 @@ from visual import GUI
 
 
 class Simulation:
-    def __init__(self, env = None):
+    def __init__(self, env=None):
         self.env = env or Environment(55, 42)
         self.gui = GUI(self.env)
         self.generation = 0
@@ -13,7 +13,7 @@ class Simulation:
 
     def run_simulation(self):
         print(self.env)
-        for i in range(100):
+        for i in range(1000):
             print(i)
 
 

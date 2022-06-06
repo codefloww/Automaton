@@ -14,7 +14,7 @@ class Cell:
     x: int
     y: int
     cell_type: str = "empty"
-    light: int = 10
+    light: int = 5
 
     organism: "Automata" = None
 
