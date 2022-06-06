@@ -234,7 +234,7 @@ class Automata:
                     break
                 else:
                     return False
-            if chosen_cell == None:
+            if not chosen_cell:
                 return False
             self, chosen_cell.organism = self.crossover(chosen_cell.organism)
             self.energy -= 30
