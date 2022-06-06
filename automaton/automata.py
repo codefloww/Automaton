@@ -14,11 +14,13 @@ class Automata:
         #     if genome == None
         #     else genome
         # )
-        self.genome = "".join([random.choice(["0", "1"]) for\
-             _ in range(2*self.GENOME_SIZE)]) if genome == None else genome
+        self.genome = (
+            "".join([random.choice(["0", "1"]) for _ in range(2 * self.GENOME_SIZE)])
+            if genome == None
+            else genome
+        )
         self.age = 0
 
-        
         self.energy = 20
         self.cell = cell
         self.x = self.cell.x
@@ -65,8 +67,6 @@ class Automata:
         completed_action = False
         for ability in abilities:
             if abilities[ability] > 0:
-                print(f"Hello behavior {ability.__name__}")
-
                 if ability.__name__ != "see_ability":
                     completed_action = ability(abilities[ability])
             if completed_action:
@@ -205,8 +205,12 @@ class Automata:
             to_eat.append(self.cell)
         if len(to_eat) > 0:
             eaten_plant = random.choice(to_eat)
-            self.env[eaten_plant.x][eaten_plant.y] = Cell(eaten_plant.x, eaten_plant.y, 'empty', eaten_plant.light)
-            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
+            self.env[eaten_plant.x][eaten_plant.y] = Cell(
+                eaten_plant.x, eaten_plant.y, "empty", eaten_plant.light
+            )
+            self.energy += (
+                strength * 5 if self.energy + strength * 5 <= 50 else 50 - self.energy
+            )
             return True
         else:
             return False
