@@ -9,11 +9,7 @@ class Automata:
     def __init__(self, cell, env, genome=None) -> None:
         self.GENOME_SIZE = 8
 
-        # self.genome = (
-        #     "".join([random.choice(["0", "1"]) for _ in range(2 * self.GENOME_SIZE)])
-        #     if genome == None
-        #     else genome
-        # )
+
         self.genome = (
             "".join([random.choice(["0", "1"]) for _ in range(2 * self.GENOME_SIZE)])
             if genome == None
@@ -43,8 +39,8 @@ class Automata:
         abilities_namings = [
             self.see_ability,
             self.move_ability,
-            self.eat_ability,
             self.kill_ability,
+            self.eat_ability,
             self.cross_ability,
             self.photosynth_ability,
             self.produce_ability,

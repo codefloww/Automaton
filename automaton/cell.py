@@ -63,7 +63,7 @@ class Organism(Cell):
         colors = [(245, 236, 142), (247, 129, 134), (150, 110, 212)]
         super().__init__(x, y, possible_cells[0], light)
 
-        self.color = random.choice(colors)
+        self.color = self.set_color()
 
     def draw(self, screen):
         x = self.x * COEFF + COEFF // 2
