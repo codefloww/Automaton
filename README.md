@@ -11,20 +11,22 @@ For more information go to our [awesome Wiki pages](https://github.com/codefloww
 To try our simulator you need to install package.  
 You can do it by running:
 ```bash
-git-clone https://github.com/codefloww/Automata.git
+git clone https://github.com/codefloww/Automata.git
 ```
 and after that go to clonned directory and run:
 ```bash
-python3 -m pip3 install .
+python3 -m pip install .
 ```
 for installing package via pip.
 
 ## Run
 To run a simulation you can simply go to the [simulation.py](automaton/simulation.py) or import package to your file and simply running something like
 ```python
-from simulation import Simulation
-sim = Simulation()
-sim.run()
+from automaton.simulation import Simulation
+from automaton.environment import Environment
+env = Environment (55, 42)
+sim = Simulation(env)
+sim.run(100, 100)
 ```
 You will see a window that looks like this  
 ![image](https://user-images.githubusercontent.com/90351072/172068831-82bdd030-a719-48ad-a551-c3db273bf288.png)  
