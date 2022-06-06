@@ -238,7 +238,7 @@ class Automata:
                 return False
             self, chosen_cell.organism = self.crossover(chosen_cell.organism)
             self.energy -= 30
-            if self.strength >= 2:
+            if strength >= 2:
                 self.mutate()
             return True
         return False

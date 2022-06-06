@@ -13,14 +13,14 @@ You can do it by running:
 ```bash
 git clone https://github.com/codefloww/Automata.git
 ```
-and after that go to clonned directory and run:
+and after that go to clonned directory and run:(It's recommended to do after entering venv)
 ```bash
 python3 -m pip install .
 ```
 for installing package via pip.
 
 ## Run
-To run a simulation you can simply go to the [simulation.py](automaton/simulation.py) or import package to your file and simply running something like
+To run a simulation you can simply go in the Automaton directory that you clonned and run the [simulation.py](automaton/simulation.py) or import package to your file and simply running something like
 ```python
 from automaton.simulation import Simulation
 from automaton.environment import Environment
