@@ -2,7 +2,7 @@
 
 from math import sqrt, floor
 import random
-from cell import Cell, Plant, Organism, Wall
+from automaton.cell import Cell, Plant, Organism, Wall
 
 
 class Automata:

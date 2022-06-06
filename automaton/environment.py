@@ -1,5 +1,4 @@
-from cell import Cell
-from automata import Automata
+from automaton.cell import Cell
 
 
 class Environment:

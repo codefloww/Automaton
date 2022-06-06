@@ -1,5 +1,5 @@
-from environment import Environment
-from visual import GUI
+from automaton.environment import Environment
+from automaton.visual import GUI
 
 
 class Simulation:

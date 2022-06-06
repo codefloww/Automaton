@@ -2,9 +2,9 @@ import datetime
 import pygame
 import time
 
-from cell import Cell, Plant, Organism, Wall
-from environment import Environment
-from automata import Automata
+from automaton.cell import Cell, Plant, Organism, Wall
+from automaton.environment import Environment
+from automaton.automata import Automata
 
 
 possible_cells = ["organism", "plant", "wall", "empty"]
