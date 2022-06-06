@@ -15,7 +15,7 @@ class Cell:
     x: int
     y: int
     cell_type: str = "empty"
-    light: int = 5
+    light: bool = False
     organism: "Automata" = None
 
     def __str__(self):

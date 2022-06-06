@@ -277,9 +277,10 @@ class Automata:
             return False
 
     def photosynth_ability(self, strength) -> None:
-        if self.cell.light > 5:
+        lightning = self.env.lighting(self.y)
+        if lightning > 5:
             self.energy += (
-                (strength * self.cell.light) // 4
+                (strength * lightning) // 4
                 if self.energy + floor(strength * 1.5) <= 50
                 else 50 - self.energy
             )
