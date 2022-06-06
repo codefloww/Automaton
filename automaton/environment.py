@@ -1,11 +1,12 @@
-from cell import Cell
-from automata import Automata
+from automaton.cell import Cell
+
 
 class Environment:
     """
     An environment.
     """
-    def __init__(self, width, height, cell_type = "empty", lighting = 10):
+
+    def __init__(self, width, height, cell_type="empty", lighting=10):
         """
         Initialize the environment.
         """
@@ -13,7 +14,10 @@ class Environment:
         self.height = height
         self.size = width * height
         self.light = False
-        self.grid = [[Cell(x, y, cell_type, lighting) for y in range(height)] for x in range(width)]
+        self.grid = [
+            [Cell(x, y, cell_type, lighting) for y in range(height)]
+            for x in range(width)
+        ]
         self.killed_before = []
 
         self.new_cells = []
@@ -62,18 +66,23 @@ class Environment:
             for cell in row:
                 yield cell
 
-
     def get_cell(self, x, y):
         """
         Return the cell at the specified coordinates.
         """
         return self.grid[x][y]
 
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
     def get_organisms(self):
         organisms = []
         for row in self.grid:
             for cell in row:
-                if cell.organism != None:
+                if cell.get_type() == "organism":
                     organisms.append(cell.organism)
         return organisms
 
@@ -144,10 +153,3 @@ class Environment:
         for width in self.grid:
             for item in width:
                 item.light = boolean
-if __name__ == "__main__":
-    env = Environment(10, 10)
-    env.get_cell(1,1).organism = Automata(env.get_cell(1,1), env)
-    for i in range(10):
-        env.run_authomatons()
-        print(env, "\n")
-
