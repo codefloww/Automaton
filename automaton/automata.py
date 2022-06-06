@@ -8,13 +8,17 @@ from cell import Cell, Plant, Organism, Wall
 class Automata:
     def __init__(self, cell, env, genome=None) -> None:
         self.GENOME_SIZE = 8
+
         # self.genome = (
         #     "".join([random.choice(["0", "1"]) for _ in range(2 * self.GENOME_SIZE)])
         #     if genome == None
         #     else genome
         # )
-        self.genome = "1" * 16
+        self.genome = "".join([random.choice(["0", "1"]) for\
+             _ in range(2*self.GENOME_SIZE)]) if genome == None else genome
         self.age = 0
+
+        
         self.energy = 20
         self.cell = cell
         self.x = self.cell.x
@@ -201,10 +205,8 @@ class Automata:
             to_eat.append(self.cell)
         if len(to_eat) > 0:
             eaten_plant = random.choice(to_eat)
-            eaten_plant = Cell(eaten_plant.x, eaten_plant.y, "empty", eaten_plant.light)
-            self.energy += (
-                strength * 5 if self.energy + strength * 5 <= 50 else 50 - self.energy
-            )
+            self.env[eaten_plant.x][eaten_plant.y] = Cell(eaten_plant.x, eaten_plant.y, 'empty', eaten_plant.light)
+            self.energy += strength*5 if self.energy + strength*5 <= 50 else 50 - self.energy
             return True
         else:
             return False
